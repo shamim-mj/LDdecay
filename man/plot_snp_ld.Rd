@@ -22,18 +22,18 @@ plot_snp_ld(
 
 \item{focal_snp}{Character string identifying the central target SNP.}
 
-\item{window_bp}{Numeric. Distance upstream/downstream to include variants. Default is `100000` (100kb).}
+\item{window_bp}{Numeric. Distance upstream/downstream to include variants. Default is \code{100000} (100kb).}
 
-\item{marker_col}{Character. Column name for variant IDs in the map file. Default is `"SNP"`.}
+\item{marker_col}{Character. Column name for variant IDs in the map file. Default is \code{"SNP"}.}
 
-\item{chr_col}{Character. Column name for chromosomes in the map file. Default is `"Chromosome"`.}
+\item{chr_col}{Character. Column name for chromosomes in the map file. Default is \code{"Chromosome"}.}
 
-\item{pos_col}{Character. Column name for base-pair positions in the map file. Default is `"Position"`.}
+\item{pos_col}{Character. Column name for base-pair positions in the map file. Default is \code{"Position"}.}
 
-\item{min_maf}{Numeric. Minor Allele Frequency threshold to filter variants. Default is `0.05`.}
+\item{min_maf}{Numeric. Minor Allele Frequency threshold to filter variants. Default is \code{0.05}.}
 }
 \value{
-A list containing the `ggplot` object, the raw $r^2$ correlation matrix, and filtered maps/genotypes.
+A list containing the \code{ggplot} object, the raw $r^2$ correlation matrix, and filtered maps/genotypes.
 }
 \description{
 Isolates flanking markers inside a physical window, filters out variants with 

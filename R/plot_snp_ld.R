@@ -6,28 +6,37 @@
 #' @param geno A numeric matrix or data frame of genotype dosages. Rows are samples, columns are SNPs.
 #' @param map A data frame containing variant metadata map records.
 #' @param focal_snp Character string identifying the central target SNP.
-#' @param window_bp Numeric. Distance upstream/downstream to include variants. Default is `100000` (100kb).
-#' @param marker_col Character. Column name for variant IDs in the map file. Default is `"SNP"`.
-#' @param chr_col Character. Column name for chromosomes in the map file. Default is `"Chromosome"`.
-#' @param pos_col Character. Column name for base-pair positions in the map file. Default is `"Position"`.
-#' @param min_maf Numeric. Minor Allele Frequency threshold to filter variants. Default is `0.05`.
+#' @param window_bp Numeric. Distance upstream/downstream to include variants. Default is \code{100000} (100kb).
+#' @param marker_col Character. Column name for variant IDs in the map file. Default is \code{"SNP"}.
+#' @param chr_col Character. Column name for chromosomes in the map file. Default is \code{"Chromosome"}.
+#' @param pos_col Character. Column name for base-pair positions in the map file. Default is \code{"Position"}.
+#' @param min_maf Numeric. Minor Allele Frequency threshold to filter variants. Default is \code{0.05}.
 #'
-#' @return A list containing the `ggplot` object, the raw $r^2$ correlation matrix, and filtered maps/genotypes.
+#' @return A list containing the \code{ggplot} object, the raw $r^2$ correlation matrix, and filtered maps/genotypes.
 #' @export
 #'
 #' @import ggplot2
 #' @importFrom stats cor
-#' @importFrom dplyr tibble
+#' @importFrom dplyr tibble .data
 plot_snp_ld <- function(geno, map, focal_snp, window_bp = 100000, 
                         marker_col = "SNP", chr_col = "Chromosome", 
                         pos_col = "Position", min_maf = 0.05) {
   
-  # Type assertions and structure checking
-  geno <- as.matrix(geno)
-  storage.mode(geno) <- "numeric"
+  # Cleanly drop the character 'taxa' tracking column before processing numbers
+  if ("taxa" %in% colnames(geno)) {
+    geno <- geno[, colnames(geno) != "taxa", drop = FALSE]
+  }
+  
+  # Safe matrix extraction template to completely bypass coercion warnings
+  geno_mat <- matrix(
+    suppressWarnings(as.numeric(as.matrix(geno))), 
+    nrow = nrow(geno), 
+    ncol = ncol(geno)
+  )
+  colnames(geno_mat) <- colnames(geno)
   
   if (!focal_snp %in% map[[marker_col]]) stop("Focal variant missing from map data records.")
-  if (!focal_snp %in% colnames(geno)) stop("Focal variant column missing from genotype matrix.")
+  if (!focal_snp %in% colnames(geno_mat)) stop("Focal variant column missing from genotype matrix.")
   
   # Extract focal metrics
   focal_row <- map[map[[marker_col]] == focal_snp, , drop = FALSE]
@@ -41,14 +50,14 @@ plot_snp_ld <- function(geno, map, focal_snp, window_bp = 100000,
       map[[pos_col]] <= (focal_pos + window_bp), , drop = FALSE
   ]
   
-  region_map <- region_map[region_map[[marker_col]] %in% colnames(geno), , drop = FALSE]
+  region_map <- region_map[region_map[[marker_col]] %in% colnames(geno_mat), , drop = FALSE]
   region_map <- region_map[order(region_map[[pos_col]]), , drop = FALSE]
   markers    <- as.character(region_map[[marker_col]])
   
   if (length(markers) < 2) stop("Fewer than two operational markers found within requested window constraints.")
   
   # Filter genotypes by MAF values
-  region_geno <- geno[, markers, drop = FALSE]
+  region_geno <- geno_mat[, markers, drop = FALSE]
   af  <- colMeans(region_geno, na.rm = TRUE) / 2
   maf <- pmin(af, 1 - af)
   
@@ -57,7 +66,7 @@ plot_snp_ld <- function(geno, map, focal_snp, window_bp = 100000,
   region_map  <- region_map[keep, , drop = FALSE]
   markers     <- colnames(region_geno)
   
-  if (length(markers) < 2) stop("Insufficent variant count remaining following rare variant MAF processing loops.")
+  if (length(markers) < 2) stop("Insufficient variant count remaining following rare variant MAF processing loops.")
   
   # Pairwise correlation matrix calculations
   r2 <- stats::cor(region_geno, use = "pairwise.complete.obs")^2
@@ -98,3 +107,4 @@ plot_snp_ld <- function(geno, map, focal_snp, window_bp = 100000,
   
   return(list(plot = ld_plot, r2 = r2, map = region_map, genotypes = region_geno))
 }
+

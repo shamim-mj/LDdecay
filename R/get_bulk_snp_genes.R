@@ -60,26 +60,28 @@ get_bulk_snp_genes <- function(snp_list, gff_path, map_data, window_bp = 50000) 
   
   # Build a bare, ultra-light data frame for matching
   gff_df <- dplyr::tibble(
-    clean_chr   = stringr::str_extract(as.character(GenomicRanges::seqnames(gff_genes)), "Gm\\d+"),
-    gene_start  = as.numeric(GenomicRanges::start(gff_genes)),
-    gene_end    = as.numeric(GenomicRanges::end(gff_genes)),
+    chromosome   = stringr::str_extract(as.character(GenomicRanges::seqnames(gff_genes)), "Gm\\d+"),
+    seqnames = as.character(GenomicRanges::seqnames(gff_genes)),
+    start  = as.numeric(GenomicRanges::start(gff_genes)),
+    end    = as.numeric(GenomicRanges::end(gff_genes)),
     strand      = as.character(GenomicRanges::strand(gff_genes)),
+    type = as.character(GenomicRanges::type(gff_genes)),
     gene_id     = if ("ID" %in% colnames(gff_meta)) as.character(gff_meta$ID) else NA_character_,
     gene_symbol = if ("Name" %in% colnames(gff_meta)) as.character(gff_meta$Name) else NA_character_,
     description = desc_vector
   ) %>% 
-    dplyr::filter(!is.na(.data$clean_chr)) # Drop scaffold fragments missing clear 'Gm' marks
+    dplyr::filter(!is.na(.data$chromosome)) # Drop scaffold fragments missing clear 'Gm' marks
   
   # Step 3: Run safe positional mapping via standard tables
   message("-> Calculating regional windows and matching locations...")
   
   final_table <- map_clean %>%
     # Initial quick join purely on matching chromosome ids
-    dplyr::inner_join(gff_df, by = c("Chromosome" = "clean_chr"), relationship = "many-to-many") %>%
+    dplyr::inner_join(gff_df, by = c("Chromosome" = "chromosome"), relationship = "many-to-many") %>%
     # Vectorized boundary filtering matching your exact logic
-    dplyr::filter(.data$gene_start <= (.data$Position + window_bp) & .data$gene_end >= (.data$Position - window_bp)) %>%
+    dplyr::filter(.data$start <= (.data$Position + window_bp) & .data$end >= (.data$Position - window_bp)) %>%
     dplyr::mutate(
-      gene_midpoint = (.data$gene_start + .data$gene_end) / 2,
+      gene_midpoint = (.data$start + .data$end) / 2,
       distance_to_snp = round(.data$gene_midpoint - .data$Position),
       orientation   = dplyr::case_when(
         .data$distance_to_snp > 0 ~ "Downstream",
@@ -93,9 +95,11 @@ get_bulk_snp_genes <- function(snp_list, gff_path, map_data, window_bp = 50000) 
       snp_pos = .data$Position,
       .data$gene_id,
       .data$gene_symbol,
-      .data$gene_start,
-      .data$gene_end,
+      .data$seqnames,
+      .data$start,
+      .data$end,
       .data$strand,
+      .data$type,
       .data$distance_to_snp,
       .data$orientation,
       .data$description
@@ -105,3 +109,4 @@ get_bulk_snp_genes <- function(snp_list, gff_path, map_data, window_bp = 50000) 
   message("Done! Master table generated with ", nrow(final_table), " total entries.")
   return(final_table)
 }
+re
