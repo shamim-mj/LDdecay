@@ -1,0 +1,26 @@
+Package: LDdecay
+Title: Advanced Tools for Linkage Disequilibrium Decay and Functional Mapping
+Version: 0.1.0
+Author: Mohammad Shamim [aut, cre]
+Maintainer: Mohammad Shamim <your.email@example.com>
+Description: A collection of optimized tools for calculation, grouping, and advanced visualization 
+    of global genome-wide linkage disequilibrium (LD) decay profiles, regional block tracking, 
+    and fast overlapping variant-to-gene mapping from standardized GFF3 annotations.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.3.0
+Imports: 
+    dplyr,
+    ggplot2,
+    stringr,
+    readr,
+    scales,
+    rtracklayer,
+    GenomicRanges,
+    S4Vectors,
+    LDheatmap,
+    mgcv
+Suggests: 
+    knitr,
+    rmarkdown
