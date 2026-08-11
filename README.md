@@ -1,12 +1,12 @@
 # LDdecay: Advanced Tools for Linkage Disequilibrium Decay and Functional Mapping
+
 # LDdecay <img src="man/figures/logo.png" align="right" height="139" />
 
-[![Project Status: Active](https://repostatus.org)](https://repostatus.org)
-[![Lifecycle: Experimental](https://shields.io)](https://r-lib.org)
-[![R Version](https://shields.io)](https://r-project.org)
-
-
-
+<p>
+  <img src="https://shields.io" alt="Project Status" />
+  <img src="https://shields.io" alt="Lifecycle" />
+  <img src="https://shields.io" alt="R Version" />
+</p>
 
 `LDdecay` is an optimized R package designed for processing, analyzing, and generating publication-ready visualizations for global genome-wide Linkage Disequilibrium (LD) decay, binned empirical decay curves, regional LD block structure maps, and fast overlapping variant-to-gene mapping from standardized GFF3 annotations.
 
