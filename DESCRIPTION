@@ -2,7 +2,7 @@ Package: LDdecay
 Title: Advanced Tools for Linkage Disequilibrium Decay and Functional Mapping
 Version: 0.1.0
 Authors@R: c(
-    person("Mohammad", "Shamim", email = "your.email@example.com", role = c("aut", "cre")),
+    person("Mohammad Jan", "Shamim", email = "your.email@example.com", role = c("aut", "cre")),
     person("Samuel", "Revolinski", email = "samuel.email@example.com", role = "aut")
     )
 Description: A collection of optimized tools for calculation, grouping, and advanced visualization 
