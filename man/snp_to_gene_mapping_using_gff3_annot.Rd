@@ -29,7 +29,7 @@ Scans a physical window upstream and downstream of target SNPs to find overlappi
 gene models extracted from a standard GFF3 file using high-performance non-equi joins.
 }
 \examples{
-#' \dontrun{
+\dontrun{
 library(LDdecay)
 library(tidyverse)
 # Define target test SNPs

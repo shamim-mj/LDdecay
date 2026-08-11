@@ -17,7 +17,7 @@
 #' @importFrom stringr str_extract
 #' @importFrom magrittr %>%
 #' @examples
-#' #' \dontrun{
+#' \dontrun{
 #' library(LDdecay)
 #' library(tidyverse)
 #' # Define target test SNPs
