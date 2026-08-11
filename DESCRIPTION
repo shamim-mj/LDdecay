@@ -19,7 +19,8 @@ Imports:
     GenomicRanges,
     S4Vectors,
     LDheatmap,
-    mgcv
+    mgcv, 
+    utils
 Suggests: 
     knitr,
     rmarkdown
