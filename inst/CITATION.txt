@@ -1,0 +1,12 @@
+citHeader("To cite package 'LDdecay' in publications use:")
+
+citEntry(entry = "Manual",
+         title = "LDdecay: Advanced Tools for Linkage Disequilibrium Decay and Functional Mapping",
+         author = as.person("Mohammad Jan Shamim and Samuel Revolinski"),
+         year = "2026",
+         note = "R package version 0.1.0",
+         url = "https://github.com",
+         textVersion = paste("Shamim, M. J., & Revolinski, S. (2026).",
+                             "LDdecay: Advanced Tools for Linkage Disequilibrium Decay and Functional Mapping.",
+                             "R package version 0.1.0.",
+                             "Available from https://github.com/shamim-mj/LDdecay.git"))
