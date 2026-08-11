@@ -1,4 +1,11 @@
 # LDdecay: Advanced Tools for Linkage Disequilibrium Decay and Functional Mapping
+# LDdecay <img src="man/figures/logo.png" align="right" height="139" />
+
+<!-- Badges start here -->
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://repostatus.org)](https://repostatus.org)
+[![Lifecycle: Experimental](https://shields.io)](https://r-lib.org)
+[![Minimal R Version](https://shields.io)](https://r-project.org)
+<!-- Badges end here -->
 
 
 
