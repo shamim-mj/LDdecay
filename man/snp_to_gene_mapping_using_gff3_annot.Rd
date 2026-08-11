@@ -36,10 +36,10 @@ library(tidyverse)
 test_snps <- c("ss715620779", "ss715620778", "ss715620770")
 # Run mapping pipeline
 test_mapping <- snp_to_gene_mapping_using_gff3_annot(
+snp_list = test_snps,
 gff_path = path/to/gff3/file, 
 map_data = map, 
-window_bp = 50000,
-focal_snp = "ss715620778")
+window_bp = 50000)
 # View performance tables
 print(test_mapping)
 }
