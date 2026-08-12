@@ -1,23 +1,123 @@
 #' Plot Linkage Disequilibrium Heatmap Around a Focal Variant
 #'
-#' Isolates flanking markers inside a physical window, filters out variants with 
-#' a low Minor Allele Frequency (MAF), and renders a correlation matrix heatmap.
+#' Calculates pairwise linkage disequilibrium (LD) as squared Pearson
+#' correlations (\eqn{r^2}) among variants surrounding a focal SNP and
+#' visualizes the resulting LD matrix as a heatmap. Variants are restricted
+#' to the same chromosome as the focal SNP, filtered by a user-defined
+#' physical window, and screened using a minimum minor allele frequency (MAF)
+#' threshold.
 #'
-#' @param geno A numeric matrix or data frame of genotype. Rows are samples, columns are SNPs. First col is taxa
-#' @param map A data frame containing variant metadata map records (SNP, Chromosome, Position).
-#' @param focal_snp Character string identifying the central target SNP (significant SNP).
-#' @param window_bp Numeric. Distance upstream/downstream to include variants. Default is \code{100000} (100kb).
-#' @param marker_col Character. Column name for variant IDs in the map file. Default is \code{"SNP"}. Change the SNP name to your map col name
-#' @param chr_col Character. Column name for chromosomes in the map file. Default is \code{"Chromosome"}.
-#' @param pos_col Character. Column name for base-pair positions in the map file. Default is \code{"Position"}.
-#' @param min_maf Numeric. Minor Allele Frequency threshold to filter variants. Default is \code{0.05}.
+#' The focal SNP is highlighted with an asterisk in the heatmap axis labels.
+#' The resulting plot provides a visual representation of local LD structure
+#' around a significant or otherwise prioritized variant.
 #'
-#' @return A list containing the \code{ggplot} object, the raw $r^2$ correlation matrix, and filtered maps/genotypes. This plot shows the correlation of the significant or focal SNP to other SNPs. Focal SNP is indicated with a "*"
+#' @param geno A data frame or matrix containing genotype dosages, with rows
+#'   representing samples and columns representing variants. If present, a
+#'   column named \code{"taxa"} is automatically removed before LD
+#'   calculations. Genotype values should be numerically coded, such as
+#'   0, 1, and 2.
+#'
+#' @param map A data frame containing physical marker information. It must
+#'   contain columns identifying the variant, chromosome, and physical
+#'   position. The corresponding column names are specified using
+#'   \code{marker_col}, \code{chr_col}, and \code{pos_col}.
+#'
+#' @param focal_snp Character string specifying the focal variant around
+#'   which the LD region is constructed. The focal SNP must be present in
+#'   both the marker map and genotype data.
+#'
+#' @param window_bp Numeric. Physical distance in base pairs upstream and
+#'   downstream of the focal SNP to include in the analysis. Default is
+#'   \code{100000} (100 kb on each side of the focal SNP).
+#'
+#' @param marker_col Character string specifying the column in \code{map}
+#'   containing variant identifiers. Default is \code{"SNP"}.
+#'
+#' @param chr_col Character string specifying the column in \code{map}
+#'   containing chromosome identifiers. Default is \code{"Chromosome"}.
+#'
+#' @param pos_col Character string specifying the column in \code{map}
+#'   containing physical marker positions in base pairs. Default is
+#'   \code{"Position"}.
+#'
+#' @param min_maf Numeric. Minimum minor allele frequency required for a
+#'   variant to be retained in the LD analysis. Variants with MAF below this
+#'   threshold are removed. Default is \code{0.05}.
+#'
+#' @return A list containing:
+#' \describe{
+#'   \item{plot}{A \code{ggplot} object showing the pairwise local LD
+#'   matrix as a heatmap.}
+#'   \item{r2}{A square matrix containing pairwise squared Pearson
+#'   correlation coefficients (\eqn{r^2}) among the retained variants.}
+#'   \item{map}{A data frame containing the marker metadata for variants
+#'   retained after regional and MAF filtering.}
+#'   \item{genotypes}{A numeric matrix containing genotype dosages for the
+#'   retained variants.}
+#' }
+#'
+#' @details
+#' The function first identifies the chromosome and physical position of the
+#' focal SNP. It then selects markers located on the same chromosome and
+#' within \code{window_bp} base pairs upstream or downstream of the focal
+#' variant.
+#'
+#' Variants not present in the genotype matrix are removed. Minor allele
+#' frequency is calculated from genotype dosage values as:
+#'
+#' \deqn{
+#' AF = \frac{\mathrm{mean}(G)}{2}
+#' }
+#'
+#' and minor allele frequency is calculated as:
+#'
+#' \deqn{
+#' MAF = \min(AF, 1 - AF).
+#' }
+#'
+#' Variants with MAF below \code{min_maf} are excluded before calculating
+#' pairwise LD.
+#'
+#' Pairwise LD is calculated as the squared Pearson correlation between
+#' genotype dosage vectors:
+#'
+#' \deqn{
+#' r^2 = cor(G_i, G_j)^2.
+#' }
+#'
+#' Correlations are calculated using \code{use = "pairwise.complete.obs"},
+#' allowing each pairwise comparison to use available non-missing genotype
+#' observations.
+#'
+#' The heatmap displays the lower triangular portion of the pairwise
+#' correlation matrix. The focal SNP is identified by an asterisk in the
+#' axis labels.
+#'
+#' @examples
+#' \dontrun{
+#' library(LDdecay)
+#'
+#' # Plot LD surrounding a focal SNP using a 100-kb window
+#' ld_result <- plot_single_snp_ld(
+#'   geno = geno,
+#'   map = map,
+#'   focal_snp = "ss715620779",
+#'   window_bp = 100000
+#' )
+#'
+#' # Display the heatmap
+#' ld_result$plot
+#'
+#' # Inspect the pairwise LD matrix
+#' head(ld_result$r2)
+#'
+#' # Inspect the markers retained in the analysis
+#' head(ld_result$map)
+#' }
+#'
 #' @export
 #'
-#' @import ggplot2
-#' @importFrom stats cor
-#' @importFrom dplyr tibble .data
+#' 
 plot_single_snp_ld <- function(geno, map, focal_snp, window_bp = 100000, 
                         marker_col = "SNP", chr_col = "Chromosome", 
                         pos_col = "Position", min_maf = 0.05) {

@@ -14,32 +14,111 @@ plot_binned_ld_global_decay(
 )
 }
 \arguments{
-\item{geno}{A data frame or matrix of genotype dosages. Must contain first column as `"taxa"` column 
-identifying individual samples, with all remaining columns containing variant IDs (scaled 0/1/2).}
+\item{geno}{A data frame or matrix containing genotype dosages. The data
+must contain a column named \code{"taxa"} identifying individual samples,
+with all remaining columns corresponding to variant identifiers. Genotype
+values should be numeric dosage values such as 0, 1, and 2.}
 
-\item{map}{A data frame containing variant coordinate details. Must include columns named
-`"SNP"`, `"Chromosome"`, and `"Position"`.}
+\item{map}{A data frame containing physical coordinates for the variants.
+The data frame must contain columns named \code{"SNP"},
+\code{"Chromosome"}, and \code{"Position"}, corresponding to variant
+identifiers, chromosome assignments, and physical positions in base pairs,
+respectively.}
 
-\item{bin_size_bp}{Numeric. The width of each physical grouping window expressed in base-pairs. 
-Default is `10000` (10kb windows).}
+\item{bin_size_bp}{Numeric value specifying the width of the physical-distance
+bins used to summarize pairwise LD. The value is expressed in base pairs.
+Default is \code{10000} (10 kb).}
 
-\item{max_distance_bp}{Numeric. The maximum physical distance cutoff limit (in base-pairs) to bound 
-the sliding calculations and x-axis window display. Default is `500000` (500kb).}
+\item{max_distance_bp}{Numeric value specifying the maximum physical distance
+over which pairwise LD is calculated and displayed. The value is expressed
+in base pairs. Default is \code{500000} (500 kb).}
 
-\item{r2_threshold}{Numeric. The baseline horizontal background line marker indicating genetic 
-linkage decay targets. Default is `0.2`.}
+\item{r2_threshold}{Numeric value specifying the \eqn{r^2} threshold displayed
+as a horizontal dashed reference line on the plot. Default is \code{0.2}.}
 
-\item{output_image_path}{Character string pointing to a local file location (including file extension) 
-to save the rendered chart asset. Set to `NULL` to bypass saving. Default is `"Figures/ld_binned_decay.png"`.}
+\item{output_image_path}{Character string specifying the file path at which
+the generated plot should be saved. The file extension determines the
+output format supported by \code{\link[ggplot2]{ggsave}}. Set to
+\code{NULL} to return the plot without saving an image. Default is
+\code{"Figures/ld_binned_decay.png"}.}
 }
 \value{
-A list structure containing two key elements:
-  \item{plot}{The generated empirical summary curve \code{ggplot} layout config.}
-  \item{binned_data}{A summarized \code{tibble} containing active columns for \code{bin} midpoints, \code{mean_r2}, \code{median_r2}, and variant correlation pair \code{count} tracking metrics.}
+A list containing two elements:
+\describe{
+  \item{plot}{A \code{ggplot} object containing the empirical LD decay
+  profile.}
+  \item{binned_data}{A data frame containing the summarized LD values for
+  each physical-distance bin. Columns include \code{bin}, the lower
+  boundary of the distance bin in base pairs; \code{mean_r2}, the mean
+  pairwise \eqn{r^2}; \code{median_r2}, the median pairwise \eqn{r^2}; and
+  \code{count}, the number of pairwise comparisons contributing to the bin.}
+}
 }
 \description{
-Automatically synchronizes genotype data and map files, computes pairwise physical window 
-correlations on the fly, and groups values into uniform base-pair intervals (bins). 
-It calculates statistical trends (mean, median, and observation frequency counts) for each 
-distance window to visualize empirical decay profiles seamlessly without memory overloads.
+Calculates pairwise linkage disequilibrium (LD) as squared Pearson
+correlation (\eqn{r^2}) between genotype markers and summarizes LD across
+physical-distance intervals. The resulting empirical LD decay profile is
+visualized as the mean \eqn{r^2} across user-defined distance bins.
+}
+\details{
+Genotype and physical-map data are first synchronized using the intersection
+of marker identifiers present in both datasets. Unanchored scaffold
+chromosomes are excluded, and markers are ordered by chromosome and physical
+position. Pairwise \eqn{r^2} values are then calculated between markers on
+the same chromosome within the specified maximum physical distance.
+
+
+The function calculates LD separately within each chromosome and does not
+calculate LD between markers located on different chromosomes. Markers
+located on chromosomes whose names begin with \code{"scaffold"} are
+excluded before analysis.
+
+Only markers present in both \code{geno} and \code{map} are retained.
+Markers are ordered by chromosome and physical position before pairwise
+comparisons are performed.
+
+For each marker, the function identifies downstream markers on the same
+chromosome within \code{max_distance_bp}. Pairwise LD is calculated as the
+squared Pearson correlation between genotype dosage vectors using
+pairwise-complete observations.
+
+Pairwise LD values are grouped into physical-distance bins of width
+\code{bin_size_bp}. For each bin, the function calculates the mean
+\eqn{r^2}, median \eqn{r^2}, and number of contributing marker pairs.
+The resulting mean \eqn{r^2} values are used to construct the empirical
+LD decay curve.
+
+A small calculation buffer is added internally to the requested maximum
+distance to reduce edge effects when assigning pairwise observations to
+the final distance bins.
+
+If \code{output_image_path} is not \code{NULL}, the output directory is
+created automatically when necessary and the plot is saved at 300 dpi.
+}
+\examples{
+\dontrun{
+library(LDdecay)
+
+# Calculate empirical LD decay using 10-kb distance bins
+ld_decay <- plot_binned_ld_global_decay(
+  geno = geno,
+  map = map,
+  bin_size_bp = 10000,
+  max_distance_bp = 500000
+)
+
+# Display the LD decay plot
+ld_decay$plot
+
+# Inspect the summarized LD data
+head(ld_decay$binned_data)
+
+# Run the analysis without saving an image
+ld_decay <- plot_binned_ld_global_decay(
+  geno = geno,
+  map = map,
+  output_image_path = NULL
+)
+}
+
 }

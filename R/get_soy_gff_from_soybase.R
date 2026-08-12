@@ -1,86 +1,125 @@
-#' Download, Decompress, and Import SoyBase GFF3 Annotation Files
+#' Download the SoyBase Williams 82 GFF3 Annotation
 #'
-#' Automatically connects to the authoritative SoyBase repository data collection, 
-#' downloads the compressed Williams 82 genome annotation layer (.gff3.gz), and 
-#' extracts it into a memory-optimized data frame ready for variant structural mapping.
+#' Downloads the Williams 82 soybean genome annotation from SoyBase,
+#' decompresses the GFF3 archive, and converts the annotation to a standard
+#' data frame using \code{\link{get_gff}}.
 #'
-#' @param dest_dir Character string pointing to the local directory where the downloaded 
-#'   GFF3 file should be stored. Default is \code{"data"}.
-#' @param overwrite Logical. If \code{TRUE}, overwrites the file if it already exists 
-#'   locally in the target folder. Default is \code{FALSE}.
+#' This function is specifically designed for soybean (\emph{Glycine max})
+#' and retrieves the Williams 82 genome annotation from SoyBase.
 #'
-#' @return A standard \code{data.frame} containing parsed genomic features (such as chromosomes, 
-#'   start/end positions, strands, and associated metadata attributes). This function return gff3 file only for soybean. Download it manually for your crop of interest
-#' @export
+#' If the uncompressed GFF3 file already exists in \code{dest_dir} and
+#' \code{overwrite = FALSE}, the existing file is used and no download is
+#' performed.
 #'
-#' @importFrom rtracklayer import
-#' @importFrom utils download.file
-#' 
+#' @param dest_dir Character string specifying the directory in which the
+#'   GFF3 annotation file will be downloaded and stored. The directory is
+#'   created recursively if it does not already exist. Default is
+#'   \code{"data"}.
+#' @param overwrite Logical indicating whether an existing uncompressed GFF3
+#'   file should be replaced. Default is \code{FALSE}.
+#'
+#' @return A \code{data.frame} containing the parsed Williams 82 soybean
+#'   genome annotation.
+#'
+#' @details
+#' The function downloads
+#' \code{glyma.Wm82.gnm1.ann1.DvBy.gene_models_main.gff3.gz}
+#' from SoyBase, decompresses the archive, removes the compressed file,
+#' and passes the resulting GFF3 file to \code{\link{get_gff}} for parsing.
+#'
+#' @references
+#' SoyBase. Soybean Genome Database.
+#' \url{https://www.soybase.org/}
+#'
 #' @examples
 #' \dontrun{
 #' library(LDdecay)
-#' 
-#' # Downloads from SoyBase, decompresses, and builds your matrix cleanly
-#' gff_table <- get_soy_gff_from_soybase(dest_dir = "data")
-#' 
-#' # Preview the results instantly!
+#'
+#' gff_table <- get_soy_gff_from_soybase(
+#'   dest_dir = "data"
+#' )
+#'
 #' head(gff_table)
 #' }
-#' 
-
-get_soy_gff_from_soybase <- function(dest_dir = "data",overwrite = FALSE) {
+#'
+#' @export
+#' @importFrom utils download.file
+get_soy_gff_from_soybase <- function(
+    dest_dir = "data",
+    overwrite = FALSE
+) {
   
-  # Ensure the target directory structure exists
   if (!dir.exists(dest_dir)) {
     dir.create(dest_dir, recursive = TRUE)
   }
   
-  # Define authoritative SoyBase target paths and file names
-  base_url  <- "https://data.soybase.org/Glycine/max/annotations/Wm82.gnm1.ann1.DvBy/"
+  base_url <- paste0(
+    "https://data.soybase.org/",
+    "Glycine/max/annotations/",
+    "Wm82.gnm1.ann1.DvBy/"
+  )
+  
   file_name <- "glyma.Wm82.gnm1.ann1.DvBy.gene_models_main.gff3.gz"
-  full_url  <- paste0(base_url, file_name)
   
-  dest_file_gz  <- file.path(dest_dir, file_name)
-  dest_file_gff <- file.path(dest_dir, gsub("\\.gz$", "", file_name))
+  full_url <- paste0(base_url, file_name)
   
-  # Check if uncompressed file already exists to save time and bandwidth
+  dest_file_gz <- file.path(
+    dest_dir,
+    file_name
+  )
+  
+  dest_file_gff <- file.path(
+    dest_dir,
+    sub("\\.gz$", "", file_name)
+  )
+  
   if (file.exists(dest_file_gff) && !overwrite) {
-    message("-> Found uncompressed GFF3 file locally. Bypassing download pipeline.")
-    return(LDdecay::get_gff(dest_file_gff))
+    
+    message(
+      "-> Found uncompressed GFF3 file locally. ",
+      "Skipping download."
+    )
+    
+    return(
+      get_gff(dest_file_gff)
+    )
   }
   
-  # Download compressed archive
-  message("-> Initiating network download connection from SoyBase...")
+  message("-> Initiating download from SoyBase...")
   message("Source URL: ", full_url)
   
   utils::download.file(
-    url      = full_url, 
-    destfile = dest_file_gz, 
-    mode     = "wb", 
-    quiet    = FALSE
+    url = full_url,
+    destfile = dest_file_gz,
+    mode = "wb"
   )
   
   if (!file.exists(dest_file_gz)) {
-    stop("Error: File transfer failed. Check your internet connection or the server URL path status.")
+    stop(
+      "File download failed. Check your internet connection ",
+      "or the SoyBase URL."
+    )
   }
   
-  message("-> File download complete. Decompressing archive layer...")
-  # Decompress natively within R using gzfile connections
-  gz_con  <- gzfile(dest_file_gz, "rb")
-  out_con <- file(dest_file_gff, "wb")
+  message(
+    "-> File download complete. Decompressing archive..."
+  )
   
-  writeBin(readBin(gz_con, "raw", n = 5e7), out_con)
+  R.utils::gunzip(
+    filename = dest_file_gz,
+    destname = dest_file_gff,
+    overwrite = overwrite,
+    remove = FALSE
+  )
   
-  close(gz_con)
-  close(out_con)
-  
-  # Remove the temporary downloaded compressed .gz archive file to save local storage space
   if (file.exists(dest_file_gz)) {
     file.remove(dest_file_gz)
   }
   
-  message("-> Decompression successful! Saved clean file to: ", dest_file_gff)
+  message(
+    "-> Decompression successful! Saved clean file to: ",
+    dest_file_gff
+  )
   
-  # Pass straight through to your existing package function to format into a light data frame
-  return(LDdecay::get_gff(dest_file_gff))
+  get_gff(dest_file_gff)
 }

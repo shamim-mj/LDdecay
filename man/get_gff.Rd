@@ -7,14 +7,23 @@
 get_gff(gff_path)
 }
 \arguments{
-\item{gff_path}{A character string pointing to the local file path of a valid `.gff3` file.}
+\item{gff_path}{Character string specifying the path to a GFF3 annotation file.}
 }
 \value{
-A standard `data.frame` containing parsed genomic features (such as chromosomes, 
-  start/end positions, strands, and associated metadata attributes).
+A \code{data.frame} containing parsed genomic features, including
+  chromosome, start and end coordinates, strand, feature type, and
+  annotation attributes.
 }
 \description{
-Reads a local genomic annotation file in GFF3 format and converts it into a 
-standard R data frame table, making structural genomic features accessible for 
-downstream data operations.
+Reads a local genomic annotation file in GFF3 format and converts it into a
+standard R data frame for downstream genomic analyses.
+}
+\examples{
+\dontrun{
+library(LDdecay)
+
+gff_table <- get_gff("data/annotation.gff3")
+head(gff_table)
+}
+
 }

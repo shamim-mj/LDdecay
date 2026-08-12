@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_global_ld_decay.R
 \name{plot_global_ld_decay}
 \alias{plot_global_ld_decay}
-\title{Calculate Global Linkage Disequilibrium Decay and Render Regression Curves}
+\title{Calculate and Plot Global Linkage Disequilibrium Decay}
 \usage{
 plot_global_ld_decay(
   geno,
@@ -14,33 +14,106 @@ plot_global_ld_decay(
 )
 }
 \arguments{
-\item{geno}{A data frame or matrix of genotype dosages. Must contain a `"taxa"` column 
-identifying individual samples, with all remaining columns containing variant IDs (scaled 0/1/2).}
+\item{geno}{A data frame or matrix containing genotype dosages. A column
+named \code{"taxa"} is required to identify samples, while the remaining
+columns should contain variant identifiers matching the \code{SNP}
+column in \code{map}. Genotype values should be coded numerically
+(e.g., 0, 1, and 2).}
 
-\item{map}{A data frame containing variant coordinate details. Must include columns named
-`"SNP"`, `"Chromosome"`, and `"Position"`.}
+\item{map}{A data frame containing physical marker information. It must
+contain the columns \code{"SNP"}, \code{"Chromosome"}, and
+\code{"Position"}, corresponding to variant identifier, chromosome, and
+physical position in base pairs, respectively.}
 
-\item{max_distance_bp}{Numeric. The maximum physical distance cutoff (in base-pairs) to trim the 
-long x-axis tail and focus the visualization window on where the curve plateaus. Default is \code{500000} (500kb).}
+\item{max_distance_bp}{Numeric. Maximum physical distance in base pairs
+between two markers for which pairwise LD is calculated. Default is
+\code{500000} (500 kb).}
 
-\item{max_plot_points}{Numeric. The maximum number of pairwise data points to sample and display 
-on the final scatterplot scatter matrix to prevent system RAM memory failure. Default is \code{100000}.}
+\item{max_plot_points}{Numeric. Maximum number of pairwise LD observations
+randomly sampled for visualization. This limits the number of points
+rendered in the plot and helps reduce memory and plotting requirements.
+Default is \code{100000}.}
 
-\item{r2_threshold}{Numeric. The base-line horizontal intercept boundary showing target LD background limits. 
-Default is \code{0.2}.}
+\item{r2_threshold}{Numeric. Value used to draw a horizontal reference line
+on the plot, representing a user-defined LD threshold. Default is
+\code{0.2}.}
 
-\item{output_image_path}{Character string pointing to a local file location (including file extension) 
-to save the rendered chart asset. Set to \code{NULL} to bypass saving. Default is \code{"Figures/ld_short_range.png"}.}
+\item{output_image_path}{Character string specifying the path, including
+file extension, where the generated plot should be saved. If \code{NULL},
+the plot is not saved to a file. Default is
+\code{"Figures/ld_short_range.png"}.}
 }
 \value{
-A list structure containing two key package elements:
-  \item{plot}{The generated composite \code{ggplot} visualization object layout configuration.}
-  \item{ld_data}{A filtered \code{data.frame} holding pairwise variant physical distances (\code{d}) and linkage values (\code{r2}), excluding self-correlations.}
+A list containing:
+\describe{
+  \item{plot}{A \code{ggplot} object showing pairwise \eqn{r^2} against
+  physical distance, with an NLS LD-decay curve and user-defined
+  \eqn{r^2} reference line.}
+  \item{ld_data}{A data frame containing the calculated pairwise LD
+  observations after removal of missing values and self-comparisons.
+  Columns include \code{d}, the physical distance between marker pairs,
+  and \code{r2}, the corresponding squared correlation coefficient.}
+}
 }
 \description{
-Evaluates genome-wide linkage disequilibrium (LD) decay profiles across populations. 
-The function automates the structural synchronization of genotype matrices and variant map arrays,
-filters out unanchored genomic scaffolds, processes pairwise r2 coefficients using local 
-vectorized window blocks, trims the physical distance space to isolate decay plateaus, fits a 
-non-linear least squares (NLS) regression model, and plots a profile.
+Calculates genome-wide pairwise linkage disequilibrium (LD) as squared
+Pearson correlations (\eqn{r^2}) between genotype markers within a
+user-defined physical distance. The function synchronizes genotype and
+marker-map data, removes unanchored scaffold markers, calculates pairwise
+\eqn{r^2} values within chromosomes, and generates a scatterplot of LD
+against physical distance. A nonlinear least-squares (NLS) regression
+curve is fitted using the model \eqn{r^2 = 1/(1 + C d)}, where \eqn{d}
+is physical distance and \eqn{C} is the fitted decay parameter.
+}
+\details{
+To reduce memory and rendering requirements, a maximum number of pairwise
+observations can be randomly sampled for visualization. The returned
+\code{ld_data} object contains the complete set of calculated pairwise
+observations retained after filtering, whereas the plot is generated from
+the sampled observations.
+
+
+Markers classified as unanchored scaffolds are removed before LD
+calculations. Only variants present in both the genotype and map datasets
+are retained. Pairwise LD is calculated only between markers located on
+the same chromosome and within \code{max_distance_bp} base pairs.
+
+The fitted decay model is:
+
+\deqn{
+r^2 = \frac{1}{1 + C d}
+}
+
+where \eqn{d} is physical distance and \eqn{C} is estimated using nonlinear
+least squares. The regression curve is fitted to a random sample of at
+most \code{max_plot_points} pairwise observations. The complete filtered
+pairwise dataset is returned in \code{ld_data}.
+}
+\examples{
+\dontrun{
+library(LDdecay)
+
+# Calculate genome-wide LD decay
+ld_result <- plot_global_ld_decay(
+  geno = geno,
+  map = map,
+  max_distance_bp = 500000,
+  max_plot_points = 100000,
+  r2_threshold = 0.2
+)
+
+# Display the LD-decay plot
+ld_result$plot
+
+# Inspect the calculated pairwise LD data
+head(ld_result$ld_data)
+
+# Save the plot to a custom location
+ld_result <- plot_global_ld_decay(
+  geno = geno,
+  map = map,
+  output_image_path = "Figures/global_ld_decay.png"
+)
+}
+
 }

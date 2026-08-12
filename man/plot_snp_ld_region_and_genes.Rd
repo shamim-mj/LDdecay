@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_snp_ld_region_and_genes.R
 \name{plot_snp_ld_region_and_genes}
 \alias{plot_snp_ld_region_and_genes}
-\title{Plot Linkage Disequilibrium Matrix and Gene Annotations in an Area of Interest (AOI)}
+\title{Plot Linkage Disequilibrium and Gene Annotations for a Genomic Region}
 \usage{
 plot_snp_ld_region_and_genes(
   map,
@@ -19,79 +19,223 @@ plot_snp_ld_region_and_genes(
   significant_snps = NULL,
   gene_pattern = "ABC-2/plant PDR ABC transporter|ABC|PDR transporter",
   gene_name = "ABC/PDR Transport",
-  label_cyp_genes = TRUE,
+  label_candidate_genes = TRUE,
   max_ld_distance = NULL,
   label_char_width = 0.01,
   label_lane_spacing = 0.55
 )
 }
 \arguments{
-\item{map}{A data frame containing physical variant metadata map records. Must include columns matching `SNP`, `Chromosome`, and `Position`.}
+\item{map}{A data frame containing physical marker information. It must
+contain columns identifying the marker, chromosome, and physical
+position. The corresponding column names are specified by
+\code{marker_col}, \code{chr_col}, and \code{pos_col}.}
 
-\item{geno}{A data frame or matrix of genotype dosages. Must contain first column as `"taxa"` column}
+\item{geno}{A data frame or matrix containing genotype dosages.
+Rows represent individual samples and columns represent genetic
+markers. A \code{"taxa"} column identifying individuals may be
+included and is automatically removed before LD calculations.
+Genotype values should be numeric dosages, typically coded as
+0, 1, and 2.}
 
-\item{gff_table}{A processed data frame containing parsed genomic feature fields (e.g., coordinates, IDs, Names, and Notes). Use the 'snp_to_gene_mapping_using_gff3_anoot' function before running this code}
+\item{gff_table}{A data frame containing genomic annotations parsed
+from a GFF3 file. The table must contain at least the columns
+\code{seqnames}, \code{start}, \code{end}, \code{strand}, and
+\code{type}. Gene annotations should be available as records with
+\code{type == "gene"}.}
 
-\item{chromosome}{Character string or numeric value specifying the single target chromosome to visualize (e.g., "Gm03").}
+\item{chromosome}{Character string or numeric value identifying the
+chromosome to analyze. Chromosome identifiers are standardized to
+soybean-style names such as \code{"Gm03"}.}
 
-\item{focal_snp}{Character string identifying the central target variant identifier (e.g., `"ss715620779"`).}
+\item{focal_snp}{Character string identifying the focal or significant
+SNP around which SNP-specific LD is calculated. The SNP must be
+present in both \code{map} and \code{geno}.}
 
-\item{ld_window}{Numeric. The search window radius in base-pairs flanking the variant. Default is set to `360000` (360kb flanking radius).}
+\item{ld_window}{Numeric. Physical distance in base pairs upstream and
+downstream of \code{focal_snp} used when calculating SNP-specific LD.
+Default is \code{360000} (360 kb).}
 
-\item{region_start}{Numeric. The minimum base-pair boundary coordinate defining the active genomic window. Default is `NULL` (automatic min coordinate).}
+\item{region_start}{Numeric. Lower physical coordinate defining the
+genomic region displayed in the final plot. If \code{NULL}, the
+minimum position among available markers in the selected chromosome
+is used.}
 
-\item{region_end}{Numeric. The maximum base-pair boundary coordinate defining the active genomic window. Default is `NULL` (automatic max coordinate).}
+\item{region_end}{Numeric. Upper physical coordinate defining the
+genomic region displayed in the final plot. If \code{NULL}, the
+maximum position among available markers in the selected chromosome
+is used.}
 
-\item{marker_col}{Character. Name of the column containing unique variant identifiers in the `map` file. Default is `"SNP"`.}
+\item{marker_col}{Character string specifying the column in \code{map}
+containing unique marker identifiers. Default is \code{"SNP"}.}
 
-\item{chr_col}{Character. Name of the column containing chromosome assignments in the `map` file. Default is `"Chromosome"`.}
+\item{chr_col}{Character string specifying the column in \code{map}
+containing chromosome identifiers. Default is \code{"Chromosome"}.}
 
-\item{pos_col}{Character. Name of the column containing base-pair coordinates in the `map` file. Default is `"Position"`.}
+\item{pos_col}{Character string specifying the column in \code{map}
+containing physical base-pair positions. Default is \code{"Position"}.}
 
-\item{significant_snps}{A character vector of prioritized or highly significant variant identifiers to visually highlight on the plot framework. Default is `NULL`.}
+\item{significant_snps}{Character vector containing SNP identifiers
+that should be highlighted in the genomic region plot. Significant
+SNPs are displayed as vertical dashed lines and assigned short labels
+(e.g., \code{S1}, \code{S2}). Default is \code{NULL}.}
 
-\item{gene_pattern}{Character string containing a regular expression (regex) to isolate and highlight priority target pathways in descriptions. Default targets specific ABC/PDR plant transporter annotations.}
+\item{gene_pattern}{Character string containing a regular expression
+used to identify candidate genes from their available annotation
+fields, including gene names, descriptions, notes, and ontology
+information. Matching is case-insensitive. The default pattern
+searches for ABC/PDR transporter-related annotations.}
 
-\item{gene_name}{Character. Title label or text indicator assigned to the structural gene tracks matching `gene_pattern` in plot legends. Default is `"ABC/PDR Transport"`. Replace with gene function for regex to find related gene e.g. cytochrome p450|cytochrome|p450}
+\item{gene_name}{Character string defining the functional category name
+used to label genes matching \code{gene_pattern} in the plot legend.
+Default is \code{"ABC/PDR Transport"}.}
 
-\item{label_cyp_genes}{Logical. If `TRUE`, includes text annotation callouts on top of structural gene models matching your target functional pattern. Default is `TRUE`.}
+\item{label_candidate_genes}{Logical. If \code{TRUE}, labels genes matching
+\code{gene_pattern} above their corresponding gene models. Despite
+the historical argument name, this option is not restricted to
+cytochrome P450 genes and can be used with any gene annotation
+pattern. Default is \code{TRUE}.}
 
-\item{max_ld_distance}{Numeric. Maximum physical distance cutoff limit (in base pairs) to bound or clip pairwise LD calculations. Default is `NULL`.}
+\item{max_ld_distance}{Numeric. Optional maximum physical distance in
+base pairs between marker pairs retained for the LD panel. If
+\code{NULL}, all pairwise comparisons within the selected region are
+retained. Default is \code{NULL}.}
 
-\item{label_char_width}{Numeric. Text scaling modifier establishing character width sizing constraints during layout evaluations. Default is `0.010`.}
+\item{label_char_width}{Numeric. Scaling factor used to estimate the
+horizontal space occupied by gene labels when assigning labels to
+non-overlapping lanes. Larger values allocate more horizontal space
+to each label. Default is \code{0.010}.}
 
-\item{label_lane_spacing}{Numeric. Vertical adjustment increment determining track separation margins for overlapping gene model callouts. Default is `0.55`.}
+\item{label_lane_spacing}{Numeric. Vertical spacing between successive
+gene-label lanes used to reduce label overlap. Default is \code{0.55}.}
 }
 \value{
-A composite plot object layout aligning physical coordinates, structural annotations, and decay profiles.
+A named list containing the composite plot and supporting
+  genomic data:
+  \describe{
+    \item{\code{plot}}{Complete composite \code{patchwork} plot containing
+      the gene annotation and LD panels.}
+    \item{\code{gene_plot}}{The gene annotation panel as a
+      \code{ggplot} object.}
+    \item{\code{ld_plot}}{The LD triangular panel as a
+      \code{ggplot} object.}
+    \item{\code{genes}}{All gene models overlapping the selected genomic
+      region, including gene classes, tracks, and label positions.}
+    \item{\code{candidate_genes}}{Subset of \code{genes} matching
+      \code{gene_pattern}. The element name is retained for backward
+      compatibility and is not restricted to CYP genes.}
+    \item{\code{marker_map}}{Marker map records retained within the
+      selected genomic region.}
+    \item{\code{significant_map}}{Map records corresponding to
+      \code{significant_snps}.}
+    \item{\code{r2}}{Square pairwise LD correlation matrix for markers
+      retained in the selected region.}
+    \item{\code{ld_data}}{Long-format pairwise LD data containing marker
+      identities, physical positions, pairwise \eqn{r^2}, marker
+      distance, and plotting coordinates.}
+    \item{\code{chromosome}}{Standardized chromosome identifier used
+      for the analysis.}
+    \item{\code{region_start}}{Lower physical coordinate of the plotted
+      region.}
+    \item{\code{region_end}}{Upper physical coordinate of the plotted
+      region.}
+  }
 }
 \description{
-Renders a publication-quality composite plot aligning a pairwise Linkage Disequilibrium (LD) 
-correlation heatmap with structural gene models extracted from a GFF database. Highlights
-candidate gene sets matching key functional patterns and tracks user-defined variant subsets.
+Generates a publication-quality composite visualization of linkage
+disequilibrium (LD) and gene annotations surrounding a focal variant.
+The function calculates SNP-specific pairwise LD around the focal SNP,
+extracts gene models from a GFF3-derived annotation table, identifies
+candidate genes using a user-defined regular expression, and combines
+the results into a two-panel genomic region plot.
+}
+\details{
+The upper panel displays gene models positioned according to their
+physical genomic coordinates. Genes matching \code{gene_pattern} are
+highlighted and can be labeled automatically. Significant SNPs can
+also be displayed as vertical reference lines with short labels.
+The lower panel displays pairwise LD as an inverted triangular
+representation, where the x-axis corresponds to physical genomic
+position and the y-axis represents half the physical distance between
+marker pairs.
+
+This function is designed for investigating candidate genomic regions
+surrounding significant GWAS markers and can be used to evaluate
+whether significant variants are located within or near genes with
+potentially relevant functional annotations.
+
+
+The function performs the following workflow:
+
+\enumerate{
+  \item Calculates SNP-specific pairwise LD around the focal SNP using
+        \code{\link{plot_single_snp_ld}}.
+  \item Validates the marker map and GFF3-derived annotation table.
+  \item Standardizes chromosome identifiers to the \code{Gm01},
+        \code{Gm02}, ..., \code{Gm20} format.
+  \item Selects markers located on the requested chromosome and within
+        the specified genomic region.
+  \item Converts the pairwise LD matrix into long format and retains
+        one triangular half of the pairwise comparisons.
+  \item Extracts gene models overlapping the selected genomic region.
+  \item Searches gene annotation fields using \code{gene_pattern} to
+        identify candidate genes.
+  \item Assigns genes to non-overlapping horizontal tracks.
+  \item Assigns candidate-gene labels to non-overlapping vertical lanes.
+  \item Adds user-defined significant SNPs as reference lines and labels.
+  \item Constructs a shared physical-position scale between the gene and
+        LD panels.
+  \item Combines the gene and LD panels using \code{patchwork}.
+}
+
+Candidate genes are identified using a regular expression applied to
+available annotation fields such as \code{Name}, \code{ID},
+\code{Note}, \code{Description}, \code{Dbxref}, and
+\code{Ontology_term}. Therefore, users can adapt the function to
+investigate different gene families or biological pathways by changing
+\code{gene_pattern} and \code{gene_name}.
+
+The LD panel uses the physical midpoint of each marker pair as its
+horizontal coordinate and half of the physical marker distance as its
+vertical coordinate. This produces a triangular representation similar
+to commonly used LD-region visualizations.
 }
 \examples{
 \dontrun{
 library(LDdecay)
-library(tidyverse)
-# Define target test SNPs
+
+# Define the focal genomic region
 focal_snp <- "ss715620779"
-chromosome <- 'Gm03'
-ld_window <- 50000
-gene_name = "ABC/PDR Transport"
-gene_pattern = "ABC-2/plant PDR ABC transporter|ABC|PDR transporter"
-# Run mapping pipeline
-test_mapping <- plot_snp_ld_region_and_genes(
-map = map, 
-geno = geno,
-gff_table = gff_table, 
-focal_snp = focal_snp,
-ld_window = ld_window,
-gene_name = gene_name,
-gene_pattern = gene_pattern
+chromosome <- "Gm03"
+
+# Define candidate-gene annotation pattern
+gene_pattern <- "ABC-2/plant PDR ABC transporter|ABC|PDR transporter"
+gene_name <- "ABC/PDR Transport"
+
+# Generate LD and gene annotation plot
+result <- plot_snp_ld_region_and_genes(
+  map = map,
+  geno = geno,
+  gff_table = gff_table,
+  chromosome = chromosome,
+  focal_snp = focal_snp,
+  ld_window = 360000,
+  gene_pattern = gene_pattern,
+  gene_name = gene_name
 )
-# View performance tables
-print(test_mapping)
+
+# Display the composite plot
+result$plot
+
+# View candidate genes
+result$candidate_genes
+
+# View pairwise LD data
+head(result$ld_data)
 }
 
+}
+\seealso{
+\code{\link{plot_single_snp_ld}},
+\code{\link{get_gff}}
 }

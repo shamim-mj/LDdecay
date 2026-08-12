@@ -14,27 +14,104 @@ plot_haploview_style_ld(
 )
 }
 \arguments{
-\item{geno}{A data frame or matrix of genotype dosages. Must contain a tracking column 
-(e.g., `"taxa"`) with all remaining columns containing variant column names (scaled 0/1/2).}
+\item{geno}{A data frame or matrix containing genotype dosages. Columns
+corresponding to the variants specified in \code{snp_subset} must be
+present in the genotype data. Genotypes should be coded numerically
+(e.g., 0, 1, and 2).}
 
-\item{map}{A data frame containing physical variant metadata map records. Must include 
-columns named `"SNP"` , `Chromosome` , and `"Position"`.}
+\item{map}{A data frame containing physical marker information. It must
+contain the columns \code{"SNP"} and \code{"Position"}, corresponding
+to variant identifiers and physical positions in base pairs,
+respectively. A \code{"Chromosome"} column may also be present for
+compatibility with standard marker-map files.}
 
-\item{snp_subset}{A vector specifying which SNPs to plot. Can be a character vector of SNP names, 
-a numeric vector of row indices (e.g., `1:60`), or a string range (e.g., `"1:60"`). 
-Default is `NULL` (automatically selects the first 60 variants).}
+\item{snp_subset}{Specifies the variants to include in the heatmap.
+The argument can be:
+\itemize{
+  \item a character vector of SNP identifiers;
+  \item a numeric vector of row indices in \code{map}; or
+  \item a single character range such as \code{"1:60"}.
+}
+If \code{NULL}, the first 60 variants in \code{map} are selected.}
 
-\item{title}{Character string defining the primary header title of the heatmap layout. Default is `"Pairwise LD"`.}
+\item{title}{Character string specifying the title displayed on the
+heatmap. Default is \code{"Pairwise LD"}.}
 
-\item{color_palette}{A vector of colors specifying the heatmap grading scale. Default is `heat.colors(20)`.}
+\item{color_palette}{Character vector defining the colors used to
+represent LD values. The default is \code{grDevices::heat.colors(20)}.}
 
-\item{flip}{Logical. If `TRUE`, displays the standard inverted triangle configuration format. Default is `TRUE`.}
+\item{flip}{Logical. If \code{TRUE}, the LDheatmap is displayed in the
+inverted-triangle orientation. Default is \code{TRUE}.}
 }
 \value{
-An object layout of class \code{LDheatmap} containing structural grid graphics configurations.
+An object returned by \code{LDheatmap::LDheatmap}, containing the
+  rendered LD heatmap and associated grid graphics components.
 }
 \description{
-Extracts a targeted subset of structural variants, calculates a square pairwise 
-correlation matrix ($r^2$), and renders a publication-quality Haploview-style 
-inverted triangle heatmap aligned with physical chromosome positions.
+Calculates pairwise linkage disequilibrium (LD) as squared Pearson
+correlations (\eqn{r^2}) among a selected set of variants and renders
+the resulting matrix as a Haploview-style LD heatmap. The heatmap can be
+displayed in an inverted-triangle configuration and is aligned with the
+physical positions of the selected variants.
+}
+\details{
+The function supports several ways of specifying the variants to display,
+including explicit SNP identifiers, numeric row indices, and character
+ranges such as \code{"1:60"}. If no subset is provided, the first 60
+variants in the map are selected automatically.
+
+
+The function first identifies the requested variants from the marker map
+and synchronizes them with the genotype matrix. Pairwise LD is calculated
+as:
+
+\deqn{
+r^2 = cor(G_i, G_j)^2
+}
+
+where \eqn{G_i} and \eqn{G_j} are genotype dosage vectors for two
+variants. Pairwise correlations are calculated using
+\code{use = "pairwise.complete.obs"}, allowing available non-missing
+genotype observations to be used for each pair.
+
+The resulting square \eqn{r^2} matrix is supplied to
+\code{LDheatmap::LDheatmap}, together with the physical positions and
+variant identifiers. The function therefore provides a convenient way
+to visualize local LD structure for a selected group of variants.
+}
+\examples{
+\dontrun{
+library(LDdecay)
+
+# Plot the first 60 variants in the marker map
+ld_plot <- plot_haploview_style_ld(
+  geno = geno,
+  map = map
+)
+
+# Plot variants 1 through 30
+ld_plot <- plot_haploview_style_ld(
+  geno = geno,
+  map = map,
+  snp_subset = "1:30"
+)
+
+# Plot a specific set of SNPs
+selected_snps <- c(
+  "ss715620779",
+  "ss715620801",
+  "ss715620845"
+)
+
+ld_plot <- plot_haploview_style_ld(
+  geno = geno,
+  map = map,
+  snp_subset = selected_snps,
+  title = "Candidate SNP LD"
+)
+
+# Display the heatmap
+ld_plot
+}
+
 }
