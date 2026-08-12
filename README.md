@@ -18,13 +18,13 @@ The package is designed primarily for genomic analysis in crop species, with soy
 
 Calculates pairwise linkage disequilibrium as squared Pearson correlations (`r²`) between markers within a user-defined physical-distance window.
 
-The package can fit the nonlinear LD-decay model:
+The fitted LD-decay model is:
 
-\[
+$$
 r^2 = \frac{1}{1 + Cd}
-\]
+$$
 
-where `d` is physical distance and `C` is the fitted decay parameter.
+where $d$ is the physical distance between markers and $C$ is the fitted decay parameter.
 
 ### Empirical binned LD decay
 
@@ -66,11 +66,11 @@ if (!requireNamespace("devtools", quietly = TRUE)) {
 
 # Install LDdecay
 devtools::install_github("shamim-mj/LDdecay")
-
+```
 # After installation: 
 ```r
 library(LDdecay)
-
+```
 # Input Data
 ## Genotype data
 The genotype dataset should contain:
@@ -79,28 +79,31 @@ The genotype dataset should contain:
 - Remaining columns containing SNP identifiers.
 - Genotype values coded numerically, typically as 0, 1, and 2.
 
-The structure should resemble:
+### Genotype Data
 
-taxa       ss715000001   ss715000002   ss715000003
-Line001          0             1             2
-Line002          1             1             2
-Line003          0             2             1
+The genotype data frame must contain a column named `taxa`, followed by columns containing SNP marker identifiers. Genotype values should be coded as `0`, `1`, or `2`.
 
+| taxa   | ss715000001 | ss715000002 | ss715000003 |
+|--------|-------------|-------------|-------------|
+| Line001 | 0           | 1           | 2           |
+| Line002 | 1           | 1           | 2           |
+| Line003 | 0           | 2           | 1           |
 
-# Physical map
+### Physical Map
 
 The marker map must contain the following columns:
 
-- SNP — variant identifier
-- Chromosome — chromosome identifier
-- Position — physical position in base pairs
+- `SNP` — variant identifier
+- `Chromosome` — chromosome identifier
+- `Position` — physical position in base pairs
 
 The structure should resemble:
 
-SNP       	Chromosome   	Position   
-ss715000001          Gm01             1      
-ss715000002          Gm01             1     
-ss715000003          Gm01             2
+| SNP         | Chromosome | Position    |
+|-------------|------------|-------------|
+| ss715000001 | Gm01       | 1562        |
+| ss715000002 | Gm01       | 2450        |
+| ss715000003 | Gm01       | 1022        |
 
 
 # GFF3 annotation
@@ -119,7 +122,7 @@ The package primarily uses records where:
 
 ```r
 type == "gene"
-
+```
 
 # Core Workflows
 ## 1. Load example data
@@ -133,13 +136,13 @@ library(LDdecay)
 data(geno)
 data(map)
 data(pheno)
-
+```
 You can inspect the datasets using:
 ```r
 head(geno)
 head(map)
 head(pheno)
-
+```
 
 ## 2. Calculate Global LD Decay
 
@@ -154,17 +157,17 @@ global_results <- plot_global_ld_decay(
   r2_threshold = 0.2,
   output_image_path = "Figures/ld_global_decay_curve.png"
 )
-
+```
 View the plot:
 
 ```r
 global_results$plot
-
+```
 The complete calculated pairwise LD data are available through:
 
 ```r
 head(global_results$ld_data)
-
+```
 The returned ld_data contains physical distance and corresponding r² values.
 
 
@@ -185,12 +188,12 @@ binned_results <- plot_binned_ld_global_decay(
   r2_threshold = 0.2,
   output_image_path = "Figures/ld_binned_decay_profile.png"
 )
-
+```
 View the resulting plot:
 
 ```r
 binned_results$plot
-
+```
 This approach is useful when millions of pairwise LD observations are generated.
 
 ## 4. Create a Haploview-Style LD Plot
@@ -206,7 +209,7 @@ plot_haploview_style_ld(
   snp_subset = 1:60,
   title = "Soybean Regional LD Matrix"
 )
-
+```
 The snp_subset argument can be used to specify either marker indices or a selected group of SNP identifiers, depending on the function configuration.
 
 
@@ -227,19 +230,19 @@ single_ld <- plot_single_snp_ld(
   pos_col = "Position",
   min_maf = 0.05
 )
-
+```
 
 The returned object can be inspected using:
 
 ```r
 
 names(single_ld)
-
+```
 For example, the LD matrix can be accessed through:
 
 ```r
 single_ld$r2
-
+```
 
 ## 6. Download the SoyBase Williams 82 GFF3 Annotation
 
@@ -250,17 +253,17 @@ gff_table <- get_soy_gff_from_soybase(
   dest_dir = "data",
   overwrite = FALSE
 )
-
+```
 Inspect the annotation:
 
 ```r
 head(gff_table)
-
+```
 Examine available fields:
 
 ```r
 names(gff_table)
-
+```
 The downloaded GFF3 file is retained locally so that it does not need to be downloaded again when overwrite = FALSE.
 
 ## 7. Import a Local GFF3 File
@@ -272,14 +275,14 @@ If you already have a GFF3 file, use get_gff():
 gff_table <- get_gff(
   gff_path = "data/my_annotation.gff3"
 )
-
+```
 The function converts the imported GFF3 annotation into a standard R data frame.
 
 Inspect the result:
 
-``r
+```r
 head(gff_table)
-
+```
 ## 8. Map SNPs to Nearby Genes
 
 sn​p_to_gene_mapping_using_gff3_annot() identifies genes located within a specified physical window around target SNPs.
@@ -292,19 +295,18 @@ test_snps <- c(
   "ss715620778",
   "ss715620770"
 )
-
 mapped_genes <- snp_to_gene_mapping_using_gff3_annot(
   snp_list = test_snps,
   gff_path = "data/glyma.Wm82.gnm1.ann1.DvBy.gene_models_main.gff3",
   map_data = map,
   window_bp = 50000
 )
-
+```
 Inspect the results:
 
 ```r
 head(mapped_genes)
-
+```
 
 The returned table includes information such as:
 
@@ -359,7 +361,7 @@ result <- plot_snp_ld_region_and_genes(
   gene_name = "ABC/PDR Transport",
   gene_pattern = "ABC-2/plant PDR ABC transporter|ABC|PDR transporter"
 )
-
+```
 
 The resulting object contains several useful components:
 
@@ -373,12 +375,12 @@ result$marker_map
 result$significant_map
 result$r2
 result$ld_data
-
+```
 Display the complete figure: It will be automatically displayed without even running this code
 
 ```r
 result$plot
-
+```
 # Candidate Gene Filtering
 
 The regional plotting function allows users to search gene annotations using regular expressions.
@@ -387,7 +389,7 @@ For example, to identify cytochrome P450-related annotations:
 
 ```r
 gene_pattern <- "cytochrome p450|cytochrome|p450"
-
+```
 Then:
 
 ```r
@@ -401,7 +403,7 @@ result <- plot_snp_ld_region_and_genes(
   gene_pattern = gene_pattern,
   gene_name = "Cytochrome P450"
 )
-
+```
 This allows the same visualization framework to be used for different biological pathways or candidate gene families.
 
 # Significant SNPs
@@ -416,11 +418,10 @@ significant_snps <- c(
   "ss715620778",
   "ss715620770"
 )
-
+```
 then
 
 ```r
-
 result <- plot_snp_ld_region_and_genes(
   map = map,
   geno = geno,
@@ -430,7 +431,7 @@ result <- plot_snp_ld_region_and_genes(
   ld_window = 50000,
   significant_snps = significant_snps
 )
-
+```
 Significant SNPs are shown as vertical reference lines in the regional plot.
 
 # Choosing the LD Window
@@ -442,14 +443,14 @@ For example:
 ```r
 
 ld_window = 50000
-
+```
 uses a 50-kb window around the focal SNP.
 
 A larger window can be used for broader regional exploration:
 
 ```r
 ld_window = 360000
-
+```
 This corresponds to a 360-kb flanking window.
 
 The appropriate window depends on the species, population, marker density, and expected LD decay.
@@ -467,7 +468,7 @@ plot_global_ld_decay(
   map = map,
   output_image_path = "Figures/global_ld_decay.png"
 )
-
+```
 The output directory is automatically created if it does not already exist.
 
 Figures are saved at publication-quality resolution.
@@ -476,7 +477,7 @@ Figures are saved at publication-quality resolution.
 
 Full function documentation is available through the package website:
 
-LDdecay Documentation
+[LDdecay Documentation](https://shamim-mj.github.io/LDdecay/)
 
 The documentation includes:
 
@@ -486,7 +487,7 @@ return values
 examples
 package workflows
 
-## Development
+# Development
 
 The source code and development versions of LDdecay are available on GitHub:
 
@@ -496,9 +497,7 @@ Bug reports and suggestions are welcome through the GitHub repository.
 
 # License
 
-LDdecay is distributed under the MIT License.
-
-See the LICENSE file for details.
+LDdecay is distributed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 # Citation
 
@@ -508,7 +507,7 @@ Run:
 
 ```r
 citation(LDdecay)
-
+```
 
 
 
