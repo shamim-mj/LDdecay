@@ -16,14 +16,15 @@ Imports:
     dplyr,
     ggplot2,
     stringr,
-    readr,
     scales,
     rtracklayer,
     GenomicRanges,
     S4Vectors,
     LDheatmap,
-    mgcv, 
-    utils
+    magrittr,
+    utils,
+    patchwork,
+    rlang
 Suggests: 
     knitr,
     rmarkdown

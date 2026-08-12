@@ -25,6 +25,7 @@ importFrom(dplyr,
   tibble
 )
 importFrom(magrittr,"%>%")
+importFrom(rlang,.data)
 importFrom(rtracklayer,import)
 importFrom(scales,comma_format)
 importFrom(stats,cor)

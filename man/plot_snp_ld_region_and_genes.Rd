@@ -6,6 +6,7 @@
 \usage{
 plot_snp_ld_region_and_genes(
   map,
+  geno,
   gff_table,
   chromosome,
   focal_snp,
@@ -26,6 +27,8 @@ plot_snp_ld_region_and_genes(
 }
 \arguments{
 \item{map}{A data frame containing physical variant metadata map records. Must include columns matching `SNP`, `Chromosome`, and `Position`.}
+
+\item{geno}{A data frame or matrix of genotype dosages. Must contain first column as `"taxa"` column}
 
 \item{gff_table}{A processed data frame containing parsed genomic feature fields (e.g., coordinates, IDs, Names, and Notes). Use the 'snp_to_gene_mapping_using_gff3_anoot' function before running this code}
 
@@ -68,7 +71,7 @@ correlation heatmap with structural gene models extracted from a GFF database. H
 candidate gene sets matching key functional patterns and tracks user-defined variant subsets.
 }
 \examples{
-#' \dontrun{
+\dontrun{
 library(LDdecay)
 library(tidyverse)
 # Define target test SNPs
@@ -80,12 +83,12 @@ gene_pattern = "ABC-2/plant PDR ABC transporter|ABC|PDR transporter"
 # Run mapping pipeline
 test_mapping <- plot_snp_ld_region_and_genes(
 map = map, 
+geno = geno,
 gff_table = gff_table, 
 focal_snp = focal_snp,
 ld_window = ld_window,
-gene_name = gene_name
+gene_name = gene_name,
 gene_pattern = gene_pattern
-map_data = map
 )
 # View performance tables
 print(test_mapping)

@@ -28,6 +28,7 @@
 #' @importFrom stringr str_detect
 #' @importFrom scales comma_format
 #' @importFrom stats cor
+
 plot_binned_ld_global_decay <- function(geno, map, bin_size_bp = 10000, max_distance_bp = 500000, 
                                  r2_threshold = 0.2, output_image_path = "Figures/ld_binned_decay.png") {
   
@@ -114,7 +115,7 @@ plot_binned_ld_global_decay <- function(geno, map, bin_size_bp = 10000, max_dist
     dplyr::group_by(.data$bin) %>%
     dplyr::summarise(
       mean_r2   = mean(.data$r2, na.rm = TRUE),
-      median_r2 = median(.data$r2, na.rm = TRUE),
+      median_r2 = stats::median(.data$r2, na.rm = TRUE),
       count     = dplyr::n(),
       .groups   = "drop"
     )

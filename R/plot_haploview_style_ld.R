@@ -21,8 +21,9 @@
 #' @importFrom stats cor
 #' @importFrom dplyr filter
 #' @importFrom LDheatmap LDheatmap
+
 plot_haploview_style_ld <- function(geno, map, snp_subset = NULL, title = "Pairwise LD", 
-                              color_palette = heat.colors(20), flip = TRUE) {
+                              color_palette = grDevices::heat.colors(20), flip = TRUE) {
   
   message("Step 1: Validating inputs and filtering variant coordinates...")
   

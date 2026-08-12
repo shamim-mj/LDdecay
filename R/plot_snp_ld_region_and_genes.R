@@ -5,6 +5,7 @@
 #' candidate gene sets matching key functional patterns and tracks user-defined variant subsets.
 #'
 #' @param map A data frame containing physical variant metadata map records. Must include columns matching `SNP`, `Chromosome`, and `Position`.
+#' @param geno  A data frame or matrix of genotype dosages. Must contain first column as `"taxa"` column 
 #' @param gff_table A processed data frame containing parsed genomic feature fields (e.g., coordinates, IDs, Names, and Notes). Use the 'snp_to_gene_mapping_using_gff3_anoot' function before running this code
 #' @param chromosome Character string or numeric value specifying the single target chromosome to visualize (e.g., "Gm03").
 #' @param focal_snp Character string identifying the central target variant identifier (e.g., `"ss715620779"`).
@@ -28,9 +29,11 @@
 #' @import ggplot2
 #' @importFrom dplyr filter mutate select
 #' @importFrom stringr str_detect
+#' @importFrom rlang .data
+
 
 #' @examples
-#' #' \dontrun{
+#' \dontrun{
 #' library(LDdecay)
 #' library(tidyverse)
 #' # Define target test SNPs
@@ -43,12 +46,12 @@
 #' # Run mapping pipeline
 #' test_mapping <- plot_snp_ld_region_and_genes(
 #' map = map, 
+#' geno = geno,
 #' gff_table = gff_table, 
 #' focal_snp = focal_snp,
 #' ld_window = ld_window,
-#' gene_name = gene_name
+#' gene_name = gene_name,
 #' gene_pattern = gene_pattern
-#' map_data = map
 #' )
 
 #' # View performance tables
@@ -58,6 +61,7 @@
 
 plot_snp_ld_region_and_genes <- function(
     map,
+    geno,
     gff_table,
     chromosome, 
     focal_snp,
@@ -104,7 +108,7 @@ plot_snp_ld_region_and_genes <- function(
   # calculate SNP specific LD
   #--------------------------------------------------#
   
-  ld_result <- plot_snp_ld(
+  ld_result <- plot_single_snp_ld(
     geno = geno,
     map = map,
     focal_snp = focal_snp, # change for other snps, 
@@ -314,7 +318,7 @@ plot_snp_ld_region_and_genes <- function(
     drop = FALSE
   ]
   
-  marker_positions <- setNames(
+  marker_positions <- stats::setNames(
     region_map[[pos_col]],
     markers
   )
@@ -457,7 +461,7 @@ plot_snp_ld_region_and_genes <- function(
   ) / 2
   
   #--------------------------------------------------#
-  # 8. Identify CYP450 genes
+  # 8. Identify relevant genes
   #--------------------------------------------------#
   
   annotation_columns <- intersect(
@@ -491,7 +495,7 @@ plot_snp_ld_region_and_genes <- function(
     annotation_text <- genes$gene_label
   }
   
-  genes$is_CYP450 <- grepl(
+  genes$is_gene <- grepl(
     gene_pattern,
     annotation_text,
     ignore.case = TRUE
@@ -499,7 +503,7 @@ plot_snp_ld_region_and_genes <- function(
   candidate_label <- paste(gene_name, "gene")
   
   genes$gene_class <- ifelse(
-    genes$is_CYP450,
+    genes$is_gene,
     candidate_label,
     "Other gene"
   )
@@ -570,7 +574,7 @@ plot_snp_ld_region_and_genes <- function(
   }
   
   #--------------------------------------------------#
-  # 10. Assign nonoverlapping CYP450 label lanes
+  # 10. Assign nonoverlapping gene label lanes
   #--------------------------------------------------#
   
   assign_label_lanes <- function(
@@ -666,42 +670,42 @@ plot_snp_ld_region_and_genes <- function(
   
   if (
     nrow(genes) > 0 &&
-    any(genes$is_CYP450)
+    any(genes$is_gene)
   ) {
     
-    cyp_indices <- which(
-      genes$is_CYP450
+    gene_indices <- which(
+      genes$is_gene
     )
     
-    genes$label_lane[cyp_indices] <-
+    genes$label_lane[gene_indices] <-
       assign_label_lanes(
         label_midpoints = genes$gene_midpoint[
-          cyp_indices
+          gene_indices
         ],
         label_text = genes$gene_label[
-          cyp_indices
+          gene_indices
         ],
         region_width = region_width,
         character_width_fraction = label_char_width
       )
     
-    genes$label_y[cyp_indices] <-
+    genes$label_y[gene_indices] <-
       max_gene_track +
       0.60 +
       (
-        genes$label_lane[cyp_indices] - 1
+        genes$label_lane[gene_indices] - 1
       ) *
       label_lane_spacing
   }
   
   max_label_y <- if (
     nrow(genes) > 0 &&
-    any(genes$is_CYP450)
+    any(genes$is_gene)
   ) {
     
     max(
       genes$label_y[
-        genes$is_CYP450
+        genes$is_gene
       ],
       na.rm = TRUE
     )
@@ -786,34 +790,34 @@ plot_snp_ld_region_and_genes <- function(
       ggplot2::geom_segment(
         data = genes,
         ggplot2::aes(
-          x = start,
-          xend = end,
-          y = track,
-          yend = track,
-          color = gene_class
+          x = .data$start,
+          xend = .data$end,
+          y = .data$track,
+          yend = .data$track,
+          color = .data$gene_class
         ),
         linewidth = 3.7,
         lineend = "butt"
       )
     
-    # Label CYP450 genes using fixed nonoverlapping lanes.
+    # Label relavant genes using fixed nonoverlapping lanes.
     # No connector lines are drawn.
     if (
       label_cyp_genes &&
-      any(genes$is_CYP450)
+      any(genes$is_gene)
     ) {
       
       gene_plot <- gene_plot +
         ggplot2::geom_text(
           data = genes[
-            genes$is_CYP450,
+            genes$is_gene,
             ,
             drop = FALSE
           ],
           ggplot2::aes(
-            x = gene_midpoint,
-            y = label_y,
-            label = gene_label
+            x = .data$gene_midpoint,
+            y = .data$label_y,
+            label = .data$gene_label
           ),
           angle = 0,
           hjust = 0.5,
@@ -843,8 +847,8 @@ plot_snp_ld_region_and_genes <- function(
         data = significant_map,
         ggplot2::aes(
           x = .data[[pos_col]],
-          y = snp_label_y,
-          label = snp_short
+          y = .data$snp_label_y,
+          label = .data$snp_short
         ),
         size = 3.0,
         fontface = "bold",
@@ -930,9 +934,9 @@ plot_snp_ld_region_and_genes <- function(
   ld_plot <- ggplot2::ggplot(
     ld_data,
     ggplot2::aes(
-      x = x,
-      y = y,
-      fill = r2
+      x = .data$x,
+      y = .data$y,
+      fill = .data$r2
     )
   ) +
     ggplot2::geom_point(
@@ -1050,12 +1054,12 @@ plot_snp_ld_region_and_genes <- function(
   
   number_label_lanes <- if (
     nrow(genes) > 0 &&
-    any(genes$is_CYP450)
+    any(genes$is_gene)
   ) {
     
     max(
       genes$label_lane[
-        genes$is_CYP450
+        genes$is_gene
       ],
       na.rm = TRUE
     )
@@ -1109,7 +1113,7 @@ plot_snp_ld_region_and_genes <- function(
       ld_plot = ld_plot,
       genes = genes,
       cyp_genes = genes[
-        genes$is_CYP450,
+        genes$is_gene,
         ,
         drop = FALSE
       ],
