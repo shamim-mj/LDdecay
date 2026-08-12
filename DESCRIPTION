@@ -29,3 +29,4 @@ Suggests:
     knitr,
     rmarkdown
 Config/roxygen2/version: 8.1.0
+URL: https://shamim-mj.github.io/LDdecay/, https://github.com/shamim-mj/LDdecay

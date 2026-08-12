@@ -320,7 +320,7 @@ map,
 
 
 ## Technical Input Guidelines
-
+[**📖 Read the documentation**](https://shamim-mj.github.io/LDdecay/)
 
 
 To ensure your datasets run seamlessly through the package pipelines, format your files as follows:
@@ -338,6 +338,7 @@ To ensure your datasets run seamlessly through the package pipelines, format you
 ## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
+
 
 
 
