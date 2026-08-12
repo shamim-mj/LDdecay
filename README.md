@@ -2,11 +2,9 @@
 
 # LDdecay <img src="man/figures/logo.png" align="right" height="139" />
 
-<p>
-  <img src="https://shields.io" alt="Project Status" />
-  <img src="https://shields.io" alt="Lifecycle" />
-  <img src="https://shields.io" alt="R Version" />
-</p>
+[![Documentation](https://img.shields.io/badge/docs-pkgdown-blue)](https://shamim-mj.github.io/LDdecay/)
+[![Last commit](https://img.shields.io/github/last-commit/shamim-mj/LDdecay)](https://github.com/shamim-mj/LDdecay)
+[![License](https://img.shields.io/github/license/shamim-mj/LDdecay)](https://github.com/shamim-mj/LDdecay)
 
 `LDdecay` is an optimized R package designed for processing, analyzing, and generating publication-ready visualizations for global genome-wide Linkage Disequilibrium (LD) decay, binned empirical decay curves, regional LD block structure maps, and fast overlapping variant-to-gene mapping from standardized GFF3 annotations.
 
