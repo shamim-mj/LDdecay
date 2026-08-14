@@ -9,6 +9,7 @@ Advanced tools for linkage disequilibrium decay analysis, regional LD visualizat
 
 [![Documentation](https://img.shields.io/badge/docs-pkgdown-blue)](https://shamim-mj.github.io/LDdecay/)
 [![GitHub last commit](https://img.shields.io/github/last-commit/shamim-mj/LDdecay)](https://github.com/shamim-mj/LDdecay)
+[![Dependencies](https://shields.io)](https://github.com/blob/main/DESCRIPTION)
 [![License](https://img.shields.io/github/license/shamim-mj/LDdecay)](https://github.com/shamim-mj/LDdecay)
 
 `LDdecay` is an R package for linkage disequilibrium (LD) analysis and visualization. The package provides tools for calculating genome-wide LD decay, generating empirical binned LD-decay curves, visualizing regional LD patterns, mapping SNPs to nearby genomic features, and integrating LD information with GFF3 gene annotations.
@@ -64,14 +65,23 @@ Provides a convenient function for downloading and decompressing the Williams 82
 The development version can be installed directly from GitHub using `devtools`.
 
 ```r
-# Install devtools if necessary
+# 1. Install BiocManager if they do not have it yet (Required for rtracklayer)
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
+}
+
+# 2. Install devtools if they don't have it
 if (!requireNamespace("devtools", quietly = TRUE)) {
   install.packages("devtools")
 }
 
-# Install LDdecay
+# 3. Explicitly tell R to look at both CRAN and Bioconductor repositories
+setRepositories(ind = 1:2)
+
+# 4. Install your package straight from your repository
 devtools::install_github("shamim-mj/LDdecay")
 ```
+
 # After installation: 
 ```r
 library(LDdecay)
