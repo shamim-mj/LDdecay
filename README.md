@@ -62,27 +62,39 @@ Provides a convenient function for downloading and decompressing the Williams 82
 
 ## Install the development version from GitHub
 
-The development version can be installed directly from GitHub using `devtools`.
+### Basic installation
 
 ```r
-# 1. Install BiocManager if they do not have it yet (Required for rtracklayer)
+install.packages("remotes")
+remotes::install_github("shamim-mj/LDdecay")
+```
+
+### Full installation
+For full functionality, including LD heatmaps and gene annotation, install the required Bioconductor dependencies first:
+
+```r
+# Install BiocManager if needed
 if (!requireNamespace("BiocManager", quietly = TRUE)) {
   install.packages("BiocManager")
 }
 
-# 2. Install devtools if they don't have it
-if (!requireNamespace("devtools", quietly = TRUE)) {
-  install.packages("devtools")
+# Install Bioconductor dependencies
+BiocManager::install(
+  c("rtracklayer", "GenomicRanges", "S4Vectors", "LDheatmap"),
+  ask = FALSE,
+  update = FALSE
+)
+
+# Install LDdecay
+if (!requireNamespace("remotes", quietly = TRUE)) {
+  install.packages("remotes")
 }
 
-# 3. Explicitly tell R to look at both CRAN and Bioconductor repositories
-setRepositories(ind = 1:2)
-
-# 4. Install your package straight from your repository
-devtools::install_github("shamim-mj/LDdecay")
+remotes::install_github("shamim-mj/LDdecay")
 ```
 
 # After installation: 
+
 ```r
 library(LDdecay)
 ```

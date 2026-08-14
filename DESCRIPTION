@@ -3,16 +3,27 @@ Title: Advanced Tools for Linkage Disequilibrium Decay and Functional Mapping
 Version: 0.1.0
 Date: 2026-08-11
 Authors@R: c(
-    person("Mohammad Jan", "Shamim", email = "your.email@example.com", role = c("aut", "cre")),
-    person("Samuel", "Revolinski", email = "samuel.email@example.com", role = "aut")
+    person(
+        "Mohammad Jan", "Shamim",
+        email = "mshamim11@uky.edu OR shamim.one@outlook.com",
+        role = c("aut", "cre")
+    ),
+    person(
+        "Samuel", "Revolinski",
+        email = "sr.revolinski@uky.edu",
+        role = "aut"
     )
-Description: A collection of optimized tools for calculation, grouping, and advanced visualization 
-    of global genome-wide linkage disequilibrium (LD) decay profiles, regional block tracking, 
-    and fast overlapping variant-to-gene mapping from standardized GFF3 annotations.
+    )
+Description: A collection of optimized tools for calculation, grouping,
+    and advanced visualization of global genome-wide linkage disequilibrium
+    (LD) decay profiles, regional block tracking, and fast overlapping
+    variant-to-gene mapping from standardized GFF3 annotations.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Imports: 
+Depends:
+    R (>= 3.5)
+Imports:
     dplyr,
     ggplot2,
     stringr,
@@ -22,15 +33,13 @@ Imports:
     S4Vectors,
     LDheatmap,
     magrittr,
-    utils,
     patchwork,
     rlang,
-    R.utils
-Suggests: 
+    R.utils,
+    utils
+Suggests:
     knitr,
     rmarkdown
 Config/roxygen2/version: 8.1.0
-URL: https://shamim-mj.github.io/LDdecay/, https://github.com/shamim-mj/LDdecay
-Depends: 
-    R (>= 3.5)
-biocViews: Infrastructure
+URL: https://shamim-mj.github.io/LDdecay/,
+    https://github.com/shamim-mj/LDdecay
