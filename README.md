@@ -1,4 +1,9 @@
-# LDdecay
+<h1>
+  <img src="man/figures/logo.png" width="80" align="left">
+  LDdecay
+</h1>
+
+<br clear="left"/>
 
 Advanced tools for linkage disequilibrium decay analysis, regional LD visualization, and SNP-to-gene mapping.
 
