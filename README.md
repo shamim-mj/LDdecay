@@ -69,7 +69,7 @@ install.packages("remotes")
 remotes::install_github("shamim-mj/LDdecay")
 ```
 
-### Full installation
+### Full installation (Recommended)
 For full functionality, including LD heatmaps and gene annotation, install the required Bioconductor dependencies first:
 
 ```r
