@@ -89,8 +89,8 @@ The genotype dataset should contain:
 
 The genotype data frame must contain a column named `taxa`, followed by columns containing SNP marker identifiers. Genotype values should be coded as `0`, `1`, or `2`.
 
-| taxa   | ss715000001 | ss715000002 | ss715000003 |
-|--------|-------------|-------------|-------------|
+| taxa    | ss715000001 | ss715000002 | ss715000003 |
+|---------|-------------|-------------|-------------|
 | Line001 | 0           | 1           | 2           |
 | Line002 | 1           | 1           | 2           |
 | Line003 | 0           | 2           | 1           |
