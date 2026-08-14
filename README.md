@@ -503,6 +503,13 @@ LDdecay is distributed under the MIT License. See the [LICENSE](LICENSE) file fo
 
 If you use LDdecay in research or publications, please cite the package according to the citation information provided in the repository and package documentation.
 
+You may cite it as: 
+
+Shamim, M. J., & Revolinski, S. (2026). LDdecay: Advanced Tools for Linkage Disequilibrium Decay and Functional Mapping. R
+  package version 0.1.0. Available from https://github.com/shamim-mj/LDdecay.git
+
+Or
+
 Run:
 
 ```r
