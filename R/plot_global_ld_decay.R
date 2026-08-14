@@ -103,8 +103,12 @@
 #'
 
 #' 
-plot_global_ld_decay <- function(geno, map, max_distance_bp = 500000, max_plot_points = 100000, 
-                                 r2_threshold = 0.2, output_image_path = "Figures/ld_short_range.png") {
+plot_global_ld_decay <- function(geno,
+                                 map,
+                                 max_distance_bp = 500000,
+                                 max_plot_points = 100000, 
+                                 r2_threshold = 0.2,
+                                 output_image_path = "Figures/ld_short_range.png") {
   
   old_scipen <- options(scipen = 999)
   on.exit(options(old_scipen), add = TRUE)

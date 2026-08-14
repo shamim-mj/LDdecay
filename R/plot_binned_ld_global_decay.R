@@ -109,8 +109,12 @@
 #' @importFrom dplyr filter mutate group_by summarise select .data
 #' @importFrom magrittr  %>%
 
-plot_binned_ld_global_decay <- function(geno, map, bin_size_bp = 10000, max_distance_bp = 500000, 
-                                 r2_threshold = 0.2, output_image_path = "Figures/ld_binned_decay.png") {
+plot_binned_ld_global_decay <- function(geno,
+                                        map,
+                                        bin_size_bp = 10000,
+                                        max_distance_bp = 500000, 
+                                        r2_threshold = 0.2,
+                                        output_image_path = "Figures/ld_binned_decay.png") {
   
   # Enforce non-scientific text layouts across function boundaries
   old_scipen <- options(scipen = 999)
