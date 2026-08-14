@@ -520,10 +520,3 @@ Run:
 ```r
 citation(LDdecay)
 ```
-
-
-
-
-
-
-
