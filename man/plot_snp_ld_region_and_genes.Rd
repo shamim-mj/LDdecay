@@ -206,7 +206,7 @@ library(LDdecay)
 
 # Define the focal genomic region
 focal_snp <- "ss715620779"
-chromosome <- "Gm03"
+chromosome <- "Gm15"
 
 # Define candidate-gene annotation pattern
 gene_pattern <- "ABC-2/plant PDR ABC transporter|ABC|PDR transporter"
@@ -214,8 +214,8 @@ gene_name <- "ABC/PDR Transport"
 
 # Generate LD and gene annotation plot
 result <- plot_snp_ld_region_and_genes(
-  map = map,
-  geno = geno,
+  map = data(map),
+  geno = data(geno),
   gff_table = gff_table,
   chromosome = chromosome,
   focal_snp = focal_snp,
