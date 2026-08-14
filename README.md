@@ -80,7 +80,7 @@ library(LDdecay)
 
 ## Example data
 
-Example datasets for genotype and phenotypic data. 
+Example datasets for genotypic and phenotypic data. 
 
 ```r
 data(geno)
