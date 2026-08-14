@@ -9,7 +9,7 @@ Advanced tools for linkage disequilibrium decay analysis, regional LD visualizat
 
 [![Documentation](https://img.shields.io/badge/docs-pkgdown-blue)](https://shamim-mj.github.io/LDdecay/)
 [![GitHub last commit](https://img.shields.io/github/last-commit/shamim-mj/LDdecay)](https://github.com/shamim-mj/LDdecay)
-[![Dependencies](https://shields.io)](https://github.com/DESCRIPTION)
+[![Dependencies](https://img.shields.io/badge/dependencies-DESCRIPTION-blue)](https://github.com/shamim-mj/LDdecay/blob/main/DESCRIPTION)
 [![License](https://img.shields.io/github/license/shamim-mj/LDdecay)](https://github.com/shamim-mj/LDdecay)
 
 `LDdecay` is an R package for linkage disequilibrium (LD) analysis and visualization. The package provides tools for calculating genome-wide LD decay, generating empirical binned LD-decay curves, visualizing regional LD patterns, mapping SNPs to nearby genomic features, and integrating LD information with GFF3 gene annotations.
