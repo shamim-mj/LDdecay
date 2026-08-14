@@ -19,6 +19,14 @@ The package is designed primarily for genomic analysis in crop species, with soy
 
 ## Features
 
+### Example data
+
+```r
+data(geno)
+data(map)
+```
+
+
 ### Global LD decay
 
 Calculates pairwise linkage disequilibrium as squared Pearson correlations (`r²`) between markers within a user-defined physical-distance window.
