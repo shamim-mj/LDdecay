@@ -78,16 +78,6 @@ library(LDdecay)
 ```
 # Input Data
 
-## Example data
-
-Example datasets for genotypic and phenotypic data. 
-
-```r
-data(geno)
-data(map)
-```
-
-
 ## Genotype data
 The genotype dataset should contain:
 
@@ -151,13 +141,11 @@ library(LDdecay)
 
 data(geno)
 data(map)
-data(pheno)
 ```
 You can inspect the datasets using:
 ```r
 head(geno)
 head(map)
-head(pheno)
 ```
 
 ## 2. Calculate Global LD Decay
