@@ -1,4 +1,9 @@
-# LDdecay
+<h1>
+  <img src="man/figures/logo.png" width="80" align="left">
+  LDdecay
+</h1>
+
+<br clear="left"/>
 
 Advanced tools for linkage disequilibrium decay analysis, regional LD visualization, and SNP-to-gene mapping.
 
@@ -502,6 +507,13 @@ LDdecay is distributed under the MIT License. See the [LICENSE](LICENSE) file fo
 # Citation
 
 If you use LDdecay in research or publications, please cite the package according to the citation information provided in the repository and package documentation.
+
+You may cite it as: 
+
+Shamim, M. J., & Revolinski, S. (2026). LDdecay: Advanced Tools for Linkage Disequilibrium Decay and Functional Mapping. R
+  package version 0.1.0. Available from https://github.com/shamim-mj/LDdecay.git
+
+Or
 
 Run:
 
