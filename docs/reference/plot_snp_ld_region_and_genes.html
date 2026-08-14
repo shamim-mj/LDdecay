@@ -310,7 +310,7 @@ to commonly used LD-region visualizations.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Define the focal genomic region</span></span></span>
 <span class="r-in"><span><span class="va">focal_snp</span> <span class="op">&lt;-</span> <span class="st">"ss715620779"</span></span></span>
-<span class="r-in"><span><span class="va">chromosome</span> <span class="op">&lt;-</span> <span class="st">"Gm03"</span></span></span>
+<span class="r-in"><span><span class="va">chromosome</span> <span class="op">&lt;-</span> <span class="st">"Gm15"</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Define candidate-gene annotation pattern</span></span></span>
 <span class="r-in"><span><span class="va">gene_pattern</span> <span class="op">&lt;-</span> <span class="st">"ABC-2/plant PDR ABC transporter|ABC|PDR transporter"</span></span></span>
@@ -318,8 +318,8 @@ to commonly used LD-region visualizations.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Generate LD and gene annotation plot</span></span></span>
 <span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">plot_snp_ld_region_and_genes</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  map <span class="op">=</span> <span class="va">map</span>,</span></span>
-<span class="r-in"><span>  geno <span class="op">=</span> <span class="va">geno</span>,</span></span>
+<span class="r-in"><span>  map <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">map</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  geno <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">geno</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  gff_table <span class="op">=</span> <span class="va">gff_table</span>,</span></span>
 <span class="r-in"><span>  chromosome <span class="op">=</span> <span class="va">chromosome</span>,</span></span>
 <span class="r-in"><span>  focal_snp <span class="op">=</span> <span class="va">focal_snp</span>,</span></span>

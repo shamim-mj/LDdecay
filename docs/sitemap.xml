@@ -4,9 +4,11 @@
 <url><loc>/index.html</loc></url>
 <url><loc>/LICENSE-text.html</loc></url>
 <url><loc>/LICENSE.html</loc></url>
+<url><loc>/reference/geno.html</loc></url>
 <url><loc>/reference/get_gff.html</loc></url>
 <url><loc>/reference/get_soy_gff_from_soybase.html</loc></url>
 <url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/map.html</loc></url>
 <url><loc>/reference/plot_binned_ld_global_decay.html</loc></url>
 <url><loc>/reference/plot_global_ld_decay.html</loc></url>
 <url><loc>/reference/plot_haploview_style_ld.html</loc></url>
