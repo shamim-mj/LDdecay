@@ -25,17 +25,17 @@ Depends:
     R (>= 3.5)
 Imports:
     dplyr,
-    ggplot2,
-    stringr,
-    scales,
-    rtracklayer,
     GenomicRanges,
-    S4Vectors,
+    ggplot2,
     LDheatmap,
     magrittr,
     patchwork,
     rlang,
+    rtracklayer,
     R.utils,
+    scales,
+    S4Vectors,
+    stringr,
     utils
 Suggests:
     knitr,
@@ -43,3 +43,4 @@ Suggests:
 Config/roxygen2/version: 8.1.0
 URL: https://shamim-mj.github.io/LDdecay,
     https://github.com/shamim-mj/LDdecay
+VignetteBuilder: knitr
