@@ -173,7 +173,7 @@ snp_to_gene_mapping_using_gff3_annot <- function(
   message("-> Stripping and converting structural elements to minimal tables...")
   
   # Safe extraction of attributes without calling un-vectorized df inflation
-  gff_meta <- S4Vectors::mcols(gff_genes)
+  gff_meta <- S4Vectors::ncol(gff_genes)
   
   desc_vector <- if ("Note" %in% colnames(gff_meta)) {
     sapply(gff_meta$Note, function(x) {
