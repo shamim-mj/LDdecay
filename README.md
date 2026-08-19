@@ -363,12 +363,18 @@ Physical genomic coordinates.
 Example:
 
 ```r
+
+# Creating a list of SNPs significantly correlated to phenotype in GWAS. Must be from the same Chr.
+
+test_snps <- c("ss715620779","ss715620870")
+
 result <- plot_snp_ld_region_and_genes(
   map = map,
   geno = geno,
   gff_table = gff_table,
-  chromosome = "Gm03",
+  chromosome = "Gm15",
   focal_snp = "ss715620779",
+  significant_snps = test_snps, # important
   ld_window = 50000,
   gene_name = "ABC/PDR Transport",
   gene_pattern = "ABC-2/plant PDR ABC transporter|ABC|PDR transporter"
@@ -405,12 +411,18 @@ gene_pattern <- "cytochrome p450|cytochrome|p450"
 Then:
 
 ```r
+
+# Creating a list of SNPs significantly correlated to phenotype in GWAS. Must be from the same Chr.
+
+test_snps <- c("ss71558199", "ss715585205","ss715585230")
+
 result <- plot_snp_ld_region_and_genes(
   map = map,
   geno = geno,
   gff_table = gff_table,
   chromosome = "Gm03",
-  focal_snp = "ss715620779",
+  focal_snp = "ss71558199",
+  significant_snps = test_snps, # important
   ld_window = 50000,
   gene_pattern = gene_pattern,
   gene_name = "Cytochrome P450"
@@ -418,32 +430,6 @@ result <- plot_snp_ld_region_and_genes(
 ```
 This allows the same visualization framework to be used for different biological pathways or candidate gene families.
 
-# Significant SNPs
-
-A vector of significant SNPs can be supplied using significant_snps.
-
-For example:
-
-```r
-significant_snps <- c(
-  "ss715620779",
-  "ss715620778",
-  "ss715620770"
-)
-```
-then
-
-```r
-result <- plot_snp_ld_region_and_genes(
-  map = map,
-  geno = geno,
-  gff_table = gff_table,
-  chromosome = "Gm03",
-  focal_snp = "ss715620779",
-  ld_window = 50000,
-  significant_snps = significant_snps
-)
-```
 Significant SNPs are shown as vertical reference lines in the regional plot.
 
 # Choosing the LD Window

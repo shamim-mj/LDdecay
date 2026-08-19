@@ -950,11 +950,11 @@ plot_snp_ld_region_and_genes <- function(
       ggplot2::geom_segment(
         data = genes,
         ggplot2::aes(
-          x = .data$start,
-          xend = .data$end,
-          y = .data$track,
-          yend = .data$track,
-          color = .data$gene_class
+          x = .data[['start']],
+          xend = .data[['end']],
+          y = .data[['track']],
+          yend = .data[['track']],
+          color =.data [['gene_class']]
         ),
         linewidth = 3.7,
         lineend = "butt"
@@ -975,9 +975,9 @@ plot_snp_ld_region_and_genes <- function(
             drop = FALSE
           ],
           ggplot2::aes(
-            x = .data$gene_midpoint,
-            y = .data$label_y,
-            label = .data$gene_label
+            x = .data[['gene_midpoint']],
+            y = .data[['label_y']],
+            label = .data[['gene_label']]
           ),
           angle = 0,
           hjust = 0.5,
@@ -1007,13 +1007,13 @@ plot_snp_ld_region_and_genes <- function(
         data = significant_map,
         ggplot2::aes(
           x = .data[[pos_col]],
-          y = .data$snp_label_y,
-          label = .data$snp_short
+          y = snp_label_y,
+          label = .data[['snp_short']]
         ),
         size = 3.0,
         fontface = "bold",
         fill = "white",
-        label.size = 0.2,
+        linewidth = 0.2,
         label.padding = grid::unit(
           0.08,
           "lines"
@@ -1030,11 +1030,11 @@ plot_snp_ld_region_and_genes <- function(
   gene_plot <- gene_plot +
     ggplot2::scale_color_manual(
       values = c(
-        candidate_label = "firebrick3",
+        setNames("firebrick3", candidate_label),
         "Other gene" = "grey55"
       ),
       name = "Gene class"
-    ) +
+    )+
     shared_x_scale +
     ggplot2::scale_y_continuous(
       limits = c(
@@ -1094,9 +1094,9 @@ plot_snp_ld_region_and_genes <- function(
   ld_plot <- ggplot2::ggplot(
     ld_data,
     ggplot2::aes(
-      x = .data$x,
-      y = .data$y,
-      fill = .data$r2
+      x = .data[['x']],
+      y = .data[['y']],
+      fill = .data[['r2']]
     )
   ) +
     ggplot2::geom_point(

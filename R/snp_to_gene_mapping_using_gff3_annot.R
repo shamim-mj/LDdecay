@@ -146,12 +146,12 @@ snp_to_gene_mapping_using_gff3_annot <- function(
   
   map_clean <- map_data %>%
     dplyr::mutate(
-      SNP = trimws(as.character(.data$SNP)),
+      SNP = trimws(as.character(SNP)),
       # Force chromosome names to standard short format (e.g. "Gm03")
-      Chromosome = stringr::str_extract(trimws(as.character(.data$Chromosome)), "Gm\\d+"),
-      Position = as.numeric(.data$Position)
+      Chromosome = stringr::str_extract(trimws(as.character(Chromosome)), "Gm\\d+"),
+      Position = as.numeric(Position)
     ) %>%
-    dplyr::filter(.data$SNP %in% snp_list)
+    dplyr::filter(SNP %in% snp_list)
   
   if (nrow(map_clean) == 0) {
     stop("Error: Zero target SNPs matched your physical map file.")
@@ -163,10 +163,10 @@ snp_to_gene_mapping_using_gff3_annot <- function(
   message("-> Importing GFF3 feature records...")
   gff_granges <- rtracklayer::import(gff_path, format = "gff3")
   # Conversion to standard R data frame table
-  gff_granges <- as.data.frame(gff_granges)
+  # gff_granges <- as.data.frame(gff_granges)
   gff_genes <- gff_granges[gff_granges$type == "gene", ]
   
-  if (nrow(gff_genes) == 0) {
+  if (length(gff_genes) == 0) {
     stop("Error: No structural feature tags labeled 'gene' found in the GFF3 file.")
   }
   
@@ -195,7 +195,7 @@ snp_to_gene_mapping_using_gff3_annot <- function(
     gene_symbol = if ("Name" %in% colnames(gff_meta)) as.character(gff_meta$Name) else NA_character_,
     description = desc_vector
   ) %>% 
-    dplyr::filter(!is.na(.data$chromosome)) # Drop scaffold fragments missing clear 'Gm' marks
+    dplyr::filter(!is.na(chromosome)) # Drop scaffold fragments missing clear 'Gm' marks
   
   # Step 3: Run safe positional mapping via standard tables
   message("-> Calculating regional windows and matching locations...")
@@ -204,33 +204,34 @@ snp_to_gene_mapping_using_gff3_annot <- function(
     # Initial quick join purely on matching chromosome ids
     dplyr::inner_join(gff_df, by = c("Chromosome" = "chromosome"), relationship = "many-to-many") %>%
     # Vectorized boundary filtering matching your exact logic
-    dplyr::filter(.data$start <= (.data$Position + window_bp) & .data$end >= (.data$Position - window_bp)) %>%
+    dplyr::filter(start <= (Position + window_bp) & end >= (Position - window_bp)) %>%
     dplyr::mutate(
-      gene_midpoint = (.data$start + .data$end) / 2,
-      distance_to_snp = round(.data$gene_midpoint - .data$Position),
+      gene_midpoint = (start + end) / 2,
+      distance_to_snp = round(gene_midpoint - Position),
       orientation   = dplyr::case_when(
-        .data$distance_to_snp > 0 ~ "Downstream",
-        .data$distance_to_snp < 0 ~ "Upstream",
+        distance_to_snp > 0 ~ "Downstream",
+        distance_to_snp < 0 ~ "Upstream",
         TRUE ~ "Overlapping"
       )
     ) %>%
     dplyr::select(
-      query_snp = .data$SNP,
-      snp_chr = .data$Chromosome,
-      snp_pos = .data$Position,
-      .data$gene_id,
-      .data$gene_symbol,
-      .data$seqnames,
-      .data$start,
-      .data$end,
-      .data$strand,
-      .data$type,
-      .data$distance_to_snp,
-      .data$orientation,
-      .data$description
+      query_snp = SNP,
+      snp_chr = Chromosome,
+      snp_pos = Position,
+      gene_id,
+      gene_symbol,
+      seqnames,
+      start,
+      end,
+      strand,
+      type,
+      distance_to_snp,
+      orientation,
+      description
     ) %>%
-    dplyr::arrange(.data$query_snp, abs(.data$distance_to_snp))
+    dplyr::arrange(query_snp, abs(distance_to_snp))
   
   message("Done! Master table generated with ", nrow(final_table), " total entries.")
   return(final_table)
 }
+
