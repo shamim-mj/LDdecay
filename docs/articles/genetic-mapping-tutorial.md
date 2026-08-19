@@ -1,15 +1,6 @@
-# LDdecay
+# Genetic Mapping Tutorial
 
-  
-
-Advanced tools for linkage disequilibrium decay analysis, regional LD
-visualization, and SNP-to-gene mapping.
-
-[![Documentation](https://img.shields.io/badge/docs-pkgdown-blue)](https://shamim-mj.github.io/LDdecay/)
-[![GitHub last
-commit](https://img.shields.io/github/last-commit/shamim-mj/LDdecay)](https://github.com/shamim-mj/LDdecay)
-[![Dependencies](https://img.shields.io/badge/dependencies-DESCRIPTION-blue)](https://github.com/shamim-mj/LDdecay/blob/main/DESCRIPTION)
-[![License](https://img.shields.io/github/license/shamim-mj/LDdecay)](https://github.com/shamim-mj/LDdecay)
+## LDdecay
 
 `LDdecay` is an R package for linkage disequilibrium (LD) analysis and
 visualization. The package provides tools for calculating genome-wide LD
@@ -23,9 +14,9 @@ part of the workflow.
 
 ------------------------------------------------------------------------
 
-## Features
+### Features
 
-### Global LD decay
+#### Global LD decay
 
 Calculates pairwise linkage disequilibrium as squared Pearson
 correlations (`r²`) between markers within a user-defined
@@ -38,55 +29,55 @@ $$r^{2} = \frac{1}{1 + Cd}$$
 where $d$ is the physical distance between markers and $C$ is the fitted
 decay parameter.
 
-### Empirical binned LD decay
+#### Empirical binned LD decay
 
 Groups pairwise LD observations into user-defined physical-distance
 intervals and calculates summary statistics such as mean or median LD.
 This provides a cleaner visualization when millions of pairwise
 observations are available.
 
-### Regional LD visualization
+#### Regional LD visualization
 
 Generates Haploview-style LD plots and regional LD heatmaps for selected
 genomic regions or subsets of markers.
 
-### SNP-specific LD analysis
+#### SNP-specific LD analysis
 
 Calculates and visualizes LD surrounding a focal SNP within a
 user-defined physical window.
 
-### SNP-to-gene mapping
+#### SNP-to-gene mapping
 
 Maps significant or target SNPs to nearby genes using GFF3 genome
 annotations. The function identifies genes within a user-defined
 physical window and reports their distance and orientation relative to
 each SNP.
 
-### LD and gene annotation integration
+#### LD and gene annotation integration
 
 Combines regional LD patterns with genomic gene models to create
 publication-quality figures showing LD structure, gene positions,
 candidate gene annotations, and significant SNP locations.
 
-### SoyBase GFF3 download
+#### SoyBase GFF3 download
 
 Provides a convenient function for downloading and decompressing the
 Williams 82 soybean GFF3 annotation from SoyBase.
 
 ------------------------------------------------------------------------
 
-# Installation
+## Installation
 
-## Install the development version from GitHub
+### Install the development version from GitHub
 
-### Basic installation
+#### Basic installation
 
 ``` r
 install.packages("remotes")
 remotes::install_github("shamim-mj/LDdecay")
 ```
 
-### Full installation (Recommended)
+#### Full installation (Recommended)
 
 For full functionality, including LD heatmaps and gene annotation,
 install the required Bioconductor dependencies first:
@@ -112,15 +103,15 @@ if (!requireNamespace("remotes", quietly = TRUE)) {
 remotes::install_github("shamim-mj/LDdecay")
 ```
 
-# After installation:
+## After installation:
 
 ``` r
 library(LDdecay)
 ```
 
-# Input Data
+## Input Data
 
-## Genotype data
+### Genotype data
 
 The genotype dataset should contain:
 
@@ -128,7 +119,7 @@ The genotype dataset should contain:
 - Remaining columns containing SNP identifiers.
 - Genotype values coded numerically, typically as 0, 1, and 2.
 
-### Genotype Data
+#### Genotype Data
 
 The genotype data frame must contain a column named `taxa`, followed by
 columns containing SNP marker identifiers. Genotype values should be
@@ -140,7 +131,7 @@ coded as `0`, `1`, or `2`.
 | Line002 | 1           | 1           | 2           |
 | Line003 | 0           | 2           | 1           |
 
-### Physical Map
+#### Physical Map
 
 The marker map must contain the following columns:
 
@@ -156,7 +147,7 @@ The structure should resemble:
 | ss715000002 | Gm01       | 2450     |
 | ss715000003 | Gm01       | 1022     |
 
-# GFF3 annotation
+## GFF3 annotation
 
 GFF3 files should contain standard genomic feature information,
 including:
@@ -174,9 +165,9 @@ The package primarily uses records where:
 type == "gene"
 ```
 
-# Core Workflows
+## Core Workflows
 
-## 1. Load example data
+### 1. Load example data
 
 The package includes example genotype, map, and phenotype datasets.
 
@@ -194,7 +185,7 @@ head(geno)
 head(map)
 ```
 
-## 2. Calculate Global LD Decay
+### 2. Calculate Global LD Decay
 
 plot_global_ld_decay() calculates pairwise LD between markers located on
 the same chromosome and within a specified physical distance.
@@ -225,7 +216,7 @@ head(global_results$ld_data)
 The returned ld_data contains physical distance and corresponding r²
 values.
 
-## 3. Generate Empirical Binned LD Decay Curves
+### 3. Generate Empirical Binned LD Decay Curves
 
 For large datasets, plotting every pairwise LD observation can produce
 extremely dense figures.
@@ -255,11 +246,27 @@ binned_results$plot
 This approach is useful when millions of pairwise LD observations are
 generated.
 
+### 4. Create a Haploview-Style LD Plot
+
+plot_haploview_style_ld() creates a regional LD visualization similar to
+traditional Haploview-style LD matrices.
+
+For example:
+
+``` r
+plot_haploview_style_ld(
+  geno = geno,
+  map = map,
+  snp_subset = 1:60,
+  title = "Soybean Regional LD Matrix"
+)
+```
+
 The snp_subset argument can be used to specify either marker indices or
 a selected group of SNP identifiers, depending on the function
 configuration.
 
-## 4. Calculate LD Around a Focal SNP
+### 5. Calculate LD Around a Focal SNP
 
 plot_single_snp_ld() calculates LD surrounding a focal SNP within a
 specified physical window.
@@ -292,7 +299,7 @@ For example, the LD matrix can be accessed through:
 single_ld$r2
 ```
 
-## 5. Download the SoyBase Williams 82 GFF3 Annotation
+### 6. Download the SoyBase Williams 82 GFF3 Annotation
 
 get_soy_gff_from_soybase() downloads the Williams 82 soybean genome
 annotation from SoyBase, decompresses the file, and imports it into an R
@@ -320,7 +327,7 @@ names(gff_table)
 The downloaded GFF3 file is retained locally so that it does not need to
 be downloaded again when overwrite = FALSE.
 
-## 6. Import a Local GFF3 File
+### 7. Import a Local GFF3 File
 
 If you already have a GFF3 file, use get_gff():
 
@@ -340,7 +347,7 @@ Inspect the result:
 head(gff_table)
 ```
 
-## 7. Map SNPs to Nearby Genes
+### 8. Map SNPs to Nearby Genes
 
 sn​p_to_gene_mapping_using_gff3_annot() identifies genes located within a
 specified physical window around target SNPs.
@@ -383,7 +390,7 @@ For example:
 query_snp snp_chr snp_pos gene_id gene_symbol start end strand
 distance_to_snp orientation description
 
-## 8. Plot LD and Gene Annotations in a Regional Area of Interest
+### 9. Plot LD and Gene Annotations in a Regional Area of Interest
 
 plot_snp_ld_region_and_genes() combines regional LD information with
 gene models from a GFF3 annotation.
@@ -397,18 +404,12 @@ pairwise LD. Physical genomic coordinates.
 Example:
 
 ``` r
-
-# Creating a list of SNPs significantly correlated to phenotype in GWAS. Must be from the same Chr.
-
-test_snps <- c("ss715620779","ss715620870")
-
 result <- plot_snp_ld_region_and_genes(
   map = map,
   geno = geno,
   gff_table = gff_table,
-  chromosome = "Gm15",
+  chromosome = "Gm03",
   focal_snp = "ss715620779",
-  significant_snps = test_snps, # important
   ld_window = 50000,
   gene_name = "ABC/PDR Transport",
   gene_pattern = "ABC-2/plant PDR ABC transporter|ABC|PDR transporter"
@@ -436,7 +437,7 @@ even running this code
 result$plot
 ```
 
-# Candidate Gene Filtering
+## Candidate Gene Filtering
 
 The regional plotting function allows users to search gene annotations
 using regular expressions.
@@ -450,18 +451,12 @@ gene_pattern <- "cytochrome p450|cytochrome|p450"
 Then:
 
 ``` r
-
-# Creating a list of SNPs significantly correlated to phenotype in GWAS. Must be from the same Chr.
-
-test_snps <- c("ss71558199", "ss715585205","ss715585230")
-
 result <- plot_snp_ld_region_and_genes(
   map = map,
   geno = geno,
   gff_table = gff_table,
   chromosome = "Gm03",
-  focal_snp = "ss71558199",
-  significant_snps = test_snps, # important
+  focal_snp = "ss715620779",
   ld_window = 50000,
   gene_pattern = gene_pattern,
   gene_name = "Cytochrome P450"
@@ -471,10 +466,38 @@ result <- plot_snp_ld_region_and_genes(
 This allows the same visualization framework to be used for different
 biological pathways or candidate gene families.
 
+## Significant SNPs
+
+A vector of significant SNPs can be supplied using significant_snps.
+
+For example:
+
+``` r
+significant_snps <- c(
+  "ss715620779",
+  "ss715620778",
+  "ss715620770"
+)
+```
+
+then
+
+``` r
+result <- plot_snp_ld_region_and_genes(
+  map = map,
+  geno = geno,
+  gff_table = gff_table,
+  chromosome = "Gm03",
+  focal_snp = "ss715620779",
+  ld_window = 50000,
+  significant_snps = significant_snps
+)
+```
+
 Significant SNPs are shown as vertical reference lines in the regional
 plot.
 
-# Choosing the LD Window
+## Choosing the LD Window
 
 The physical window can be adjusted depending on the objective.
 
@@ -498,7 +521,7 @@ This corresponds to a 360-kb flanking window.
 The appropriate window depends on the species, population, marker
 density, and expected LD decay.
 
-# Output Files
+## Output Files
 
 Most plotting functions allow the user to save figures directly.
 
@@ -517,7 +540,7 @@ exist.
 
 Figures are saved at publication-quality resolution.
 
-# Package Documentation
+## Package Documentation
 
 Full function documentation is available through the package website:
 
@@ -528,7 +551,7 @@ The documentation includes:
 function descriptions argument definitions return values examples
 package workflows
 
-# Development
+## Development
 
 The source code and development versions of LDdecay are available on
 GitHub:
@@ -537,12 +560,12 @@ GitHub:
 
 Bug reports and suggestions are welcome through the GitHub repository.
 
-# License
+## License
 
 LDdecay is distributed under the MIT License. See the [LICENSE](LICENSE)
 file for details.
 
-# Citation
+## Citation
 
 If you use LDdecay in research or publications, please cite the package
 according to the citation information provided in the repository and
@@ -561,30 +584,3 @@ Run:
 ``` r
 citation(LDdecay)
 ```
-
-# Package index
-
-## All functions
-
-- [`geno`](geno.md) : Example Genotype Dataset
-- [`get_gff()`](get_gff.md) : Import and Convert GFF3 Annotation Files
-  to Standard Data Frames
-- [`get_soy_gff_from_soybase()`](get_soy_gff_from_soybase.md) : Download
-  the SoyBase Williams 82 GFF3 Annotation
-- [`map`](map.md) : Example Physical Marker Map
-- [`plot_binned_ld_global_decay()`](plot_binned_ld_global_decay.md) :
-  Calculate and Plot Binned Empirical Linkage Disequilibrium Decay
-- [`plot_global_ld_decay()`](plot_global_ld_decay.md) : Calculate and
-  Plot Global Linkage Disequilibrium Decay
-- [`plot_single_snp_ld()`](plot_single_snp_ld.md) : Plot Linkage
-  Disequilibrium Heatmap Around a Focal Variant
-- [`plot_snp_ld_region_and_genes()`](plot_snp_ld_region_and_genes.md) :
-  Plot Linkage Disequilibrium and Gene Annotations for a Genomic Region
-- [`snp_to_gene_mapping_using_gff3_annot()`](snp_to_gene_mapping_using_gff3_annot.md)
-  : Map SNPs to Nearby Genes Using GFF3 Genome Annotations
-
-# Articles
-
-### All vignettes
-
-- [Genetic Mapping Tutorial](genetic-mapping-tutorial.md):

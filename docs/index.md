@@ -86,7 +86,7 @@ install.packages("remotes")
 remotes::install_github("shamim-mj/LDdecay")
 ```
 
-### Full installation
+### Full installation (Recommended)
 
 For full functionality, including LD heatmaps and gene annotation,
 install the required Bioconductor dependencies first:
@@ -255,27 +255,11 @@ binned_results$plot
 This approach is useful when millions of pairwise LD observations are
 generated.
 
-## 4. Create a Haploview-Style LD Plot
-
-plot_haploview_style_ld() creates a regional LD visualization similar to
-traditional Haploview-style LD matrices.
-
-For example:
-
-``` r
-plot_haploview_style_ld(
-  geno = geno,
-  map = map,
-  snp_subset = 1:60,
-  title = "Soybean Regional LD Matrix"
-)
-```
-
 The snp_subset argument can be used to specify either marker indices or
 a selected group of SNP identifiers, depending on the function
 configuration.
 
-## 5. Calculate LD Around a Focal SNP
+## 4. Calculate LD Around a Focal SNP
 
 plot_single_snp_ld() calculates LD surrounding a focal SNP within a
 specified physical window.
@@ -308,7 +292,7 @@ For example, the LD matrix can be accessed through:
 single_ld$r2
 ```
 
-## 6. Download the SoyBase Williams 82 GFF3 Annotation
+## 5. Download the SoyBase Williams 82 GFF3 Annotation
 
 get_soy_gff_from_soybase() downloads the Williams 82 soybean genome
 annotation from SoyBase, decompresses the file, and imports it into an R
@@ -336,7 +320,7 @@ names(gff_table)
 The downloaded GFF3 file is retained locally so that it does not need to
 be downloaded again when overwrite = FALSE.
 
-## 7. Import a Local GFF3 File
+## 6. Import a Local GFF3 File
 
 If you already have a GFF3 file, use get_gff():
 
@@ -356,7 +340,7 @@ Inspect the result:
 head(gff_table)
 ```
 
-## 8. Map SNPs to Nearby Genes
+## 7. Map SNPs to Nearby Genes
 
 sn​p_to_gene_mapping_using_gff3_annot() identifies genes located within a
 specified physical window around target SNPs.
@@ -399,7 +383,7 @@ For example:
 query_snp snp_chr snp_pos gene_id gene_symbol start end strand
 distance_to_snp orientation description
 
-## 9. Plot LD and Gene Annotations in a Regional Area of Interest
+## 8. Plot LD and Gene Annotations in a Regional Area of Interest
 
 plot_snp_ld_region_and_genes() combines regional LD information with
 gene models from a GFF3 annotation.
@@ -413,12 +397,18 @@ pairwise LD. Physical genomic coordinates.
 Example:
 
 ``` r
+
+# Creating a list of SNPs significantly correlated to phenotype in GWAS. Must be from the same Chr.
+
+test_snps <- c("ss715620779","ss715620870")
+
 result <- plot_snp_ld_region_and_genes(
   map = map,
   geno = geno,
   gff_table = gff_table,
-  chromosome = "Gm03",
+  chromosome = "Gm15",
   focal_snp = "ss715620779",
+  significant_snps = test_snps, # important
   ld_window = 50000,
   gene_name = "ABC/PDR Transport",
   gene_pattern = "ABC-2/plant PDR ABC transporter|ABC|PDR transporter"
@@ -460,12 +450,18 @@ gene_pattern <- "cytochrome p450|cytochrome|p450"
 Then:
 
 ``` r
+
+# Creating a list of SNPs significantly correlated to phenotype in GWAS. Must be from the same Chr.
+
+test_snps <- c("ss71558199", "ss715585205","ss715585230")
+
 result <- plot_snp_ld_region_and_genes(
   map = map,
   geno = geno,
   gff_table = gff_table,
   chromosome = "Gm03",
-  focal_snp = "ss715620779",
+  focal_snp = "ss71558199",
+  significant_snps = test_snps, # important
   ld_window = 50000,
   gene_pattern = gene_pattern,
   gene_name = "Cytochrome P450"
@@ -474,34 +470,6 @@ result <- plot_snp_ld_region_and_genes(
 
 This allows the same visualization framework to be used for different
 biological pathways or candidate gene families.
-
-# Significant SNPs
-
-A vector of significant SNPs can be supplied using significant_snps.
-
-For example:
-
-``` r
-significant_snps <- c(
-  "ss715620779",
-  "ss715620778",
-  "ss715620770"
-)
-```
-
-then
-
-``` r
-result <- plot_snp_ld_region_and_genes(
-  map = map,
-  geno = geno,
-  gff_table = gff_table,
-  chromosome = "Gm03",
-  focal_snp = "ss715620779",
-  ld_window = 50000,
-  significant_snps = significant_snps
-)
-```
 
 Significant SNPs are shown as vertical reference lines in the regional
 plot.

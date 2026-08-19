@@ -12,8 +12,6 @@
   Calculate and Plot Binned Empirical Linkage Disequilibrium Decay
 - [`plot_global_ld_decay()`](plot_global_ld_decay.md) : Calculate and
   Plot Global Linkage Disequilibrium Decay
-- [`plot_haploview_style_ld()`](plot_haploview_style_ld.md) : Generate a
-  Haploview-Style Inverted Triangle LD Heatmap
 - [`plot_single_snp_ld()`](plot_single_snp_ld.md) : Plot Linkage
   Disequilibrium Heatmap Around a Focal Variant
 - [`plot_snp_ld_region_and_genes()`](plot_snp_ld_region_and_genes.md) :
